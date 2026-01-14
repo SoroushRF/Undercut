@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+pydantic
+google-generativeai
+sqlalchemy
+psycopg2-binary
+pytest

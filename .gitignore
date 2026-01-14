@@ -1,0 +1,48 @@
+# General
+.DS_Store
+.vscode/
+.idea/
+*.log
+*.tmp
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Python (Backend)
+__pycache__/
+*.py[cod]
+*$py.class
+backend/venv/
+backend/.venv/
+backend/env/
+backend/*.egg-info/
+backend/dist/
+backend/build/
+
+# Node.js (Frontend)
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/coverage/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+
+# Go (Scraper)
+scraper/bin/
+scraper/dist/
+scraper/*.exe
+scraper/*.test
+scraper/*.out
+scraper/vendor/
+
+# Testing
+playwright-report/
+test-results/
+
+# Docker
+.docker_data/
