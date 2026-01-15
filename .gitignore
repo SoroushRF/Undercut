@@ -4,6 +4,10 @@
 .idea/
 *.log
 *.tmp
+.agent/
+# AI Rules in root (if any)
+ai_rules.yaml
+node_modules/
 
 # Environment Variables
 .env
