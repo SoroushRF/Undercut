@@ -50,3 +50,8 @@ test-results/
 
 # Docker
 .docker_data/
+
+docs/Controller_Build_Plan.md
+
+# Database
+*.db

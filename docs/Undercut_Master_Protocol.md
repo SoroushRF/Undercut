@@ -20,7 +20,7 @@ This document serves as the "Source of Truth" for the Undercut monorepo developm
 *   **Mission:** To build the robust, high-performance gateway between the data and the user. The Controller manages FastAPI routes, Google Gemini SDK integration, and high-level orchestration.
 *   **Primary Tasks:**
     *   Designing RESTful endpoints (FastAPI).
-    *   Crafting Gemini 1.5 prompt templates for car description analysis.
+    *   Crafting Gemini 3.0 Flash prompt templates for car description analysis.
     *   Managing database connections and Supabase interactions.
     *   Authentication and security middleware.
 *   **Write Jurisdiction (ALLOWED):**
