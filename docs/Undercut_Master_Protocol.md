@@ -3,6 +3,8 @@
 ## 1. Introduction
 This document serves as the "Source of Truth" for the Undercut monorepo development team. In a high-speed "Vibe Coding" environment, strict boundary adherence is mandatory to prevent merge conflicts, technical debt, and cross-domain logic pollution. Every developer (and AI assistant) must strictly operate within their designated folders.
 
+**Core Product Scope:** Toronto/GTA Market Only. Supabase Free Tier Architecture. Hybrid AI Logic.
+
 ---
 
 ## 2. General Monorepo Rules
@@ -20,12 +22,13 @@ This document serves as the "Source of Truth" for the Undercut monorepo developm
 *   **Mission:** To build the robust, high-performance gateway between the data and the user. The Controller manages FastAPI routes, Google Gemini SDK integration, and high-level orchestration.
 *   **Primary Tasks:**
     *   Designing RESTful endpoints (FastAPI).
-    *   Crafting Gemini 3.0 Flash prompt templates for car description analysis.
-    *   Managing database connections and Supabase interactions.
-    *   Authentication and security middleware.
+    *   Crafting Gemini 1.5 Flash prompt templates (Hybrid Analysis).
+    *   **User Management:** Managing `User` and `Profile` models (Supabase).
+    *   **Security:** CORS and Rate Limiting.
 *   **Write Jurisdiction (ALLOWED):**
     *   `backend/routers/`
     *   `backend/models/`
+    *   `backend/services/` (AI, TCO)
     *   `backend/main.py`
     *   `backend/requirements.txt`
 *   **Forbidden Zones (NO-GO):**
@@ -36,10 +39,10 @@ This document serves as the "Source of Truth" for the Undercut monorepo developm
 ### 📈 Role B: The Quant (Mathematical Financial Logic)
 *   **Mission:** To provide the "intelligence" behind the pricing. The Quant translates market data into Fair Market Value (FMV) scores and identifies outliers.
 *   **Primary Tasks:**
-    *   Implementing pricing algorithms in Python.
+    *   Implementing pricing algorithms in Python (FMV).
     *   Statistical analysis of mileage vs. price trends.
-    *   Building the "Deal Grade" logic (A, B, C, F).
-    *   Optimization of data clusters.
+    *   Building the "Deal Grade" logic (S-Tier to F-Tier).
+    *   **Outlier Detection:** Identifying scams or zero-price listings.
 *   **Write Jurisdiction (ALLOWED):**
     *   `backend/services/quant/`
 *   **Forbidden Zones (NO-GO):**
@@ -48,12 +51,11 @@ This document serves as the "Source of Truth" for the Undercut monorepo developm
     *   `scraper/*`
 
 ### 🏹 Role C: The Hunter (Go-Lang Scraper / Data Ingestion)
-*   **Mission:** To feed the engine. The Hunter builds high-concurrency Go crawlers that extract raw data from AutoTrader, Clutch, and other marketplaces.
+*   **Mission:** To feed the engine. The Hunter builds high-concurrency Go crawlers that extract raw data from AutoTrader.ca (Toronto/GTA).
 *   **Primary Tasks:**
     *   Managing Colly collectors and DOM parsing logic.
-    *   Handling rotating proxies and anti-bot bypass.
-    *   Mapping raw site data to the Undercut internal schema.
-    *   Go dependency management.
+    *   **Logic:** Handling "Deleted Posts" (Syncing with DB).
+    *   **Optimization:** Targeted scraping (radius 100km).
 *   **Write Jurisdiction (ALLOWED):**
     *   `scraper/`
     *   `scraper/go.mod`
@@ -69,11 +71,10 @@ This document serves as the "Source of Truth" for the Undercut monorepo developm
     *   Creating reusable Button, Card, Input, and Modal components.
     *   Managing global Tailwind themes and colors.
     *   Maintaining the TypeScript "Contract" (`types.ts`).
-    *   Consistency of design tokens.
+    *   **Guest Mode UI:** Designing the "Preview" vs "Member" states.
 *   **Write Jurisdiction (ALLOWED):**
     *   `frontend/components/ui/`
     *   `frontend/lib/` (The Shared Contract)
-    *   `frontend/lib/mock-data.ts`
     *   `frontend/tsconfig.json`
 *   **Forbidden Zones (NO-GO):**
     *   `frontend/app/` (The Integrator assembles; The Architect provides parts).
@@ -83,15 +84,12 @@ This document serves as the "Source of Truth" for the Undercut monorepo developm
 ### 🎨 Role E: The UX Engineer (Visualization & Motion)
 *   **Mission:** To bring the data to life. The UX Engineer focuses on complex charts, Framer Motion animations, and responsive interactions.
 *   **Primary Tasks:**
-    *   Building the "Gauges" and "Market Trend" charts in `/viz`.
-    *   Implementing fluid page transitions.
-    *   Crafting custom React hooks for mobile gestures and window resizing.
-    *   Refining the "Gemini Verdict" display experience.
+    *   Building the "Gauges" (TCO) and "Market Trend" charts in `/viz`.
+    *   Refining the "Negotiation Script" display experience.
 *   **Write Jurisdiction (ALLOWED):**
     *   `frontend/components/viz/`
     *   `frontend/components/motion/`
     *   `frontend/hooks/` (General hooks)
-    *   `frontend/lib/mock-data.ts`
 *   **Forbidden Zones (NO-GO):**
     *   `frontend/components/ui/` (Usage only; no modification).
     *   `frontend/app/`
@@ -101,9 +99,8 @@ This document serves as the "Source of Truth" for the Undercut monorepo developm
 *   **Mission:** To build the actual app. The Integrator takes the components and data to assemble the final user experience.
 *   **Primary Tasks:**
     *   Building layouts and page routes in `/app`.
+    *   **Flow:** Handling progressive onboarding (Guest -> Member).
     *   Managing TanStack Query state and API fetching.
-    *   Handling form submission and validation logic.
-    *   Ensuring the app "feels" connected to the Backend.
 *   **Write Jurisdiction (ALLOWED):**
     *   `frontend/app/`
     *   `frontend/hooks/use-cars.ts` (The Data Gate)
@@ -119,8 +116,7 @@ This document serves as the "Source of Truth" for the Undercut monorepo developm
 *   **Primary Tasks:**
     *   Writing Playwright E2E tests.
     *   Managing Docker Compose orchestration.
-    *   Setting up GitHub Actions CI workflows.
-    *   Configuration of environment variables.
+    *   Configuration of environment variables (.env).
 *   **Write Jurisdiction (ALLOWED):**
     *   `tests/`
     *   `.github/`
@@ -136,7 +132,7 @@ This document serves as the "Source of Truth" for the Undercut monorepo developm
 ## 4. The "Handshake" Protocols (Communication)
 
 ### API Contract Changes
-When **The Controller** needs to add a new property to a car object:
+When **The Controller** needs to add a new property (e.g., `negotiation_script`) to a car object:
 1. They propose the change in `backend/models/car.py`.
 2. They notify **The Architect**.
 3. **The Architect** updates `frontend/lib/types.ts`.
@@ -168,13 +164,13 @@ To enable parallel development, we operate on a "Mock-First" basis.
 
 ---
 
-## 5. Summary Table
+## 6. Summary Table
 
 | Role | Core Technology | Primary Write Directory | High-Level Duty |
 | :--- | :--- | :--- | :--- |
-| **Controller** | FastAPI / Python | `backend/routers` | API & AI Logic |
+| **Controller** | FastAPI / Python | `backend/routers` | API, AI, User Profile |
 | **Quant** | Statistics / Python | `backend/services/quant` | Pricing Math |
-| **Hunter** | Go / Colly | `scraper/` | Web Scraping |
+| **Hunter** | Go / Colly | `scraper/` | Web Scraping (Toronto) |
 | **Architect** | Shadcn / Tailwind | `frontend/components/ui` | Atomic Design |
 | **UX Engineer** | Framer / Recharts | `frontend/components/viz`, `motion` | Viz & Animation |
 | **Integrator** | Next.js / TanStack | `frontend/app`, `hooks/use-cars.ts` | Page Assembly |
@@ -182,43 +178,4 @@ To enable parallel development, we operate on a "Mock-First" basis.
 
 ---
 
----
-
-## 6. GitHub Workflow (The Stage-Gate Model)
-
-To ensure stability in a multi-role monorepo, Undercut uses a tiered merge strategy.
-
-1.  **Level 1: Role Branches (`quant`, `ux`, `scrapper`, etc.)**
-    *   Individual workers commit to their specific branch.
-    *   No cross-role merging allowed at this stage.
-2.  **Level 2: Domain Branches (`backend`, `frontend`)**
-    *   Role branches merge into their respective Domain branch.
-    *   **The Controller** oversees `backend` stability.
-    *   **The Integrator**/ **Architect** oversees `frontend` stability.
-3.  **Level 3: Integration Branch (`dev`)**
-    *   `backend` and `frontend` merge here for full-stack "Fusion" testing.
-    *   Full E2E suite (Playwright) must pass.
-4.  **Level 4: Production Branch (`main`)**
-    *   Only `dev` merges into `main` after a successful staging verification.
-
----
-
-## 7. Commit & Push Procedure (The Discipline)
-
-### 7.1 Commit Protocol
-- **AI Persona Check:** Before every commit, the AI agent must verify the staged files match the active role's jurisdiction.
-- **Message Format:** `[ROLE] Short description of change` (e.g., `[QUANT] Implemented Haversine pricing outlier logic`).
-- **Forbidden Actions:** Never commit changes to `.env` or files in `.agent/`.
-
-### 7.2 Push & PR Procedure
-1.  **Sync First:** Always `git pull origin <your-branch>` before pushing to resolve local conflicts.
-2.  **Strict Push:** Push only to your assigned branch. 
-3.  **The PR Handshake:**
-    *   When a feature is ready, open a Pull Request to the **Domain Branch** (`backend` or `frontend`).
-    *   The PR description must include: "Related to [Contract Update/New Feature/Bugfix]".
-    *   Tag the **Guardian** for a CI/CD check.
-
----
-
-**END OF DOCUMENT**
-**Last Updated: 2026-01-15**
+**Last Updated: 2026-01-18**
