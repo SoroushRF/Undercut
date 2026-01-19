@@ -66,6 +66,55 @@ async def read_cars(
     return cars
 
 
+@router.get("/trending", response_model=List[CarResponse])
+@limiter.limit("30/minute")
+async def get_trending_cars(
+    request: Request,
+    limit: int = 10,
+    db: Session = Depends(get_db),
+):
+    """
+    Get trending/best deals for the landing page.
+    
+    Returns top S and A tier deals, ordered by:
+    1. Deal grade (S first, then A)
+    2. Most recently added
+    
+    Rate Limited: 30 requests/minute
+    
+    Used by: Frontend landing page "Top Deals" section
+    """
+    cars = (
+        db.query(Car)
+        .filter(Car.status == "active")
+        .filter(Car.deal_grade.in_(["S", "A"]))  # Only good deals
+        .order_by(
+            Car.deal_grade.asc(),  # S before A
+            Car.created_at.desc()  # Newest first within grade
+        )
+        .limit(limit)
+        .all()
+    )
+    
+    # If we don't have enough S/A deals, fill with B tier
+    if len(cars) < limit:
+        remaining = limit - len(cars)
+        existing_ids = [c.id for c in cars]
+        
+        filler_cars = (
+            db.query(Car)
+            .filter(Car.status == "active")
+            .filter(Car.deal_grade == "B")
+            .filter(Car.id.notin_(existing_ids))
+            .order_by(Car.created_at.desc())
+            .limit(remaining)
+            .all()
+        )
+        cars.extend(filler_cars)
+    
+    return cars
+
+
 @router.get("/{car_id}", response_model=CarResponse)
 @limiter.limit("60/minute")  # Higher limit for detail views
 async def read_car(request: Request, car_id: str, db: Session = Depends(get_db)):
@@ -110,3 +159,133 @@ async def analyze_car(request: Request, car_id: str, db: Session = Depends(get_d
     db.refresh(car)
 
     return car
+
+
+# ============================================================================
+# SEARCH ENDPOINT
+# ============================================================================
+
+from pydantic import BaseModel, Field
+from typing import Optional
+
+
+class CarSearchFilters(BaseModel):
+    """
+    Search filters for advanced car search.
+    All fields are optional - omit to skip that filter.
+    """
+    # Text search
+    query: Optional[str] = Field(None, description="Free text search (make, model)")
+    
+    # Vehicle filters
+    make: Optional[str] = Field(None, description="Filter by make (e.g., Toyota)")
+    model: Optional[str] = Field(None, description="Filter by model (e.g., Camry)")
+    year_min: Optional[int] = Field(None, description="Minimum year", ge=1900)
+    year_max: Optional[int] = Field(None, description="Maximum year", le=2030)
+    
+    # Price filters
+    price_min: Optional[float] = Field(None, description="Minimum price", ge=0)
+    price_max: Optional[float] = Field(None, description="Maximum price")
+    
+    # Mileage filters
+    mileage_max: Optional[int] = Field(None, description="Maximum mileage (KM)", ge=0)
+    
+    # Spec filters
+    transmission: Optional[str] = Field(None, description="automatic, manual, cvt")
+    fuel_type: Optional[str] = Field(None, description="gasoline, electric, hybrid, etc.")
+    drivetrain: Optional[str] = Field(None, description="fwd, rwd, awd, 4wd")
+    
+    # Seller filters
+    seller_type: Optional[str] = Field(None, description="dealer, private")
+    
+    # Deal filters
+    deal_grade: Optional[str] = Field(None, description="S, A, B, C, F")
+    only_good_deals: Optional[bool] = Field(False, description="Only show S and A grades")
+    
+    # Pagination
+    skip: int = Field(0, description="Number of results to skip", ge=0)
+    limit: int = Field(50, description="Max results to return", ge=1, le=100)
+
+
+@router.post("/search", response_model=List[CarResponse])
+@limiter.limit("20/minute")  # Stricter limit for complex queries
+async def search_cars(
+    request: Request,
+    filters: CarSearchFilters,
+    db: Session = Depends(get_db),
+):
+    """
+    Advanced car search with filters.
+    
+    Rate Limited: 20 requests/minute (complex query protection)
+    
+    Usage:
+    - Send POST with JSON body containing filter criteria
+    - Omit fields to skip those filters
+    - Use only_good_deals=true for S/A tier deals only
+    """
+    query = db.query(Car).filter(Car.status == "active")
+
+    # Free text search (make or model contains query)
+    if filters.query:
+        search_term = f"%{filters.query}%"
+        query = query.filter(
+            (Car.make.ilike(search_term)) | (Car.model.ilike(search_term))
+        )
+
+    # Make filter
+    if filters.make:
+        query = query.filter(Car.make.ilike(f"%{filters.make}%"))
+
+    # Model filter
+    if filters.model:
+        query = query.filter(Car.model.ilike(f"%{filters.model}%"))
+
+    # Year range
+    if filters.year_min:
+        query = query.filter(Car.year >= filters.year_min)
+    if filters.year_max:
+        query = query.filter(Car.year <= filters.year_max)
+
+    # Price range
+    if filters.price_min:
+        query = query.filter(Car.price >= filters.price_min)
+    if filters.price_max:
+        query = query.filter(Car.price <= filters.price_max)
+
+    # Mileage
+    if filters.mileage_max:
+        query = query.filter(Car.mileage <= filters.mileage_max)
+
+    # Transmission
+    if filters.transmission:
+        query = query.filter(Car.transmission == filters.transmission)
+
+    # Fuel type
+    if filters.fuel_type:
+        query = query.filter(Car.fuel_type == filters.fuel_type)
+
+    # Drivetrain
+    if filters.drivetrain:
+        query = query.filter(Car.drivetrain == filters.drivetrain)
+
+    # Seller type
+    if filters.seller_type:
+        query = query.filter(Car.seller_type == filters.seller_type)
+
+    # Deal grade
+    if filters.deal_grade:
+        query = query.filter(Car.deal_grade == filters.deal_grade)
+    elif filters.only_good_deals:
+        query = query.filter(Car.deal_grade.in_(["S", "A"]))
+
+    # Order by best deals first, then newest
+    query = query.order_by(
+        Car.deal_grade.asc(),  # S, A, B, C, F
+        Car.created_at.desc()
+    )
+
+    # Pagination
+    cars = query.offset(filters.skip).limit(filters.limit).all()
+
+    return cars
