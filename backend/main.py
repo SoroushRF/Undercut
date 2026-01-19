@@ -1,7 +1,7 @@
 import os
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from backend.routers import cars
+from backend.routers import cars, users
 from backend.database import engine, Base
 from backend.models import car, user  # Import models to register tables
 from fastapi.middleware.cors import CORSMiddleware
@@ -42,6 +42,7 @@ app.add_middleware(
 
 # Include Routers
 app.include_router(cars.router)
+app.include_router(users.router)
 
 
 @app.get("/")
