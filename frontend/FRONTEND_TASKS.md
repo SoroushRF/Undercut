@@ -1,13 +1,116 @@
-# Frontend Team: What You Can Work On NOW
+# Frontend Team: Complete Setup & Task Guide
 
 **Last Updated:** 2026-01-19
 **Status:** Backend API is live. Contract is aligned.
 
 ---
 
-## 🚀 Phase 0: Setup
+## 🔧 Phase 0: Getting Started
 
-### Option A: Mock Data Only (Recommended for UI Development)
+### Step 1: Clone the Repository (First Time Only)
+
+```bash
+git clone https://github.com/SoroushRF/Undercut.git
+cd Undercut
+```
+
+### Step 2: Switch to Your Branch
+
+Each role has a dedicated branch. **Work ONLY on your branch.**
+
+| Role | Branch | Command |
+|------|--------|---------|
+| **The Architect (Stylist)** | `style` | `git checkout style` |
+| **The UX Engineer** | `ux` | `git checkout ux` |
+| **The Integrator** | `integration` | `git checkout integration` |
+
+Example:
+```bash
+git checkout style
+```
+
+### Step 3: Pull Latest Code
+
+**ALWAYS pull before starting work:**
+
+```bash
+git pull origin <your-branch>
+```
+
+Example:
+```bash
+git checkout style
+git pull origin style
+```
+
+### Step 4: Install Frontend Dependencies
+
+```bash
+cd frontend
+npm install
+```
+
+### Step 5: Start Development Server
+
+```bash
+npm run dev
+```
+
+The app runs at `http://localhost:3000`.
+
+---
+
+## 💾 Daily Workflow
+
+### Starting Your Day
+
+```bash
+# Navigate to project
+cd Undercut
+
+# Switch to your branch
+git checkout <your-branch>
+
+# Pull latest changes
+git pull origin <your-branch>
+
+# Start dev server
+cd frontend
+npm run dev
+```
+
+### Saving Your Work
+
+```bash
+# Stage all changes
+git add .
+
+# Commit with a descriptive message
+git commit -m "[ROLE] What you did"
+
+# Push to your branch
+git push origin <your-branch>
+```
+
+**Commit message format:**
+- `[ARCHITECT] Created DealCard component`
+- `[UX] Added page transition animations`
+- `[INTEGRATOR] Built landing page layout`
+
+### Syncing with Latest API Changes
+
+If the backend team pushes new contract changes:
+
+```bash
+git checkout <your-branch>
+git pull origin <your-branch>
+git merge origin/api -m "Sync with api updates"
+git push origin <your-branch>
+```
+
+---
+
+## 🖥️ Option A: Mock Data Only (Recommended)
 
 You don't need the backend running. Just use mock data.
 
@@ -19,7 +122,9 @@ npm run dev
 
 The app will run at `http://localhost:3000` using `lib/mock-data.ts`.
 
-### Option B: Connect to Live Backend (For Integration Testing)
+---
+
+## 🔌 Option B: Connect to Live Backend (For Integration Testing)
 
 If you want to test against the real API:
 
@@ -61,6 +166,7 @@ Now your frontend can fetch from `http://localhost:8000`.
 
 ## 🏛️ The Architect (Atomic UI Designer)
 
+**Your Branch:** `style`
 **Your Folder:** `frontend/components/ui/`
 
 ### Tasks You Can Start Today
@@ -80,6 +186,7 @@ Now your frontend can fetch from `http://localhost:8000`.
 
 ## 🎨 The UX Engineer (Visualization & Motion)
 
+**Your Branch:** `ux`
 **Your Folders:** `frontend/components/viz/`, `frontend/components/motion/`, `frontend/hooks/`
 
 ### Tasks You Can Start Today
@@ -98,6 +205,7 @@ Now your frontend can fetch from `http://localhost:8000`.
 
 ## 🧩 The Integrator (Page Assembly & State Manager)
 
+**Your Branch:** `integration`
 **Your Folders:** `frontend/app/`, `frontend/hooks/use-cars.ts`
 
 ### Tasks You Can Start Today
@@ -138,21 +246,39 @@ The API runs at `http://localhost:8000`. CORS is enabled for `localhost:3000`.
 
 ---
 
-## 📋 New Fields Available
+## 📋 Available Fields
 
-These fields were just added. Use them in your components:
+These fields are available in `types.ts` and `mock-data.ts`:
 
 | Field | Type | Use Case |
 |-------|------|----------|
-| `trim` | `string \| null` | Display "2023 BMW M3 **Competition**" |
+| `id` | `string` | Unique identifier |
+| `vin` | `string` | Vehicle ID (17 chars) |
+| `make` | `string` | e.g., "Toyota", "BMW" |
+| `model` | `string` | e.g., "Camry", "M3" |
+| `year` | `number` | e.g., 2023 |
+| `trim` | `string \| null` | e.g., "Competition", "Type R" |
 | `transmission` | `automatic \| manual \| cvt` | Filter chip |
 | `fuel_type` | `gasoline \| electric \| hybrid...` | TCO Calculator, Filter |
 | `drivetrain` | `fwd \| rwd \| awd \| 4wd` | Toronto winter filter |
+| `price` | `number` | Listed price in CAD |
+| `mileage` | `number` | Odometer in KM |
+| `postal_code` | `string \| null` | e.g., "M5V 3L9" |
 | `seller_type` | `dealer \| private` | Badge or negotiation hint |
-| `postal_code` | `string \| null` | Proximity display |
+| `listing_url` | `string` | Original listing URL |
+| `image_url` | `string \| null` | Display image |
+| `description` | `string \| null` | Seller's description |
+| `created_at` | `ISO string` | When scraped |
 | `last_seen_at` | `ISO string \| null` | "Verified 2h ago" |
 | `status` | `active \| sold \| deleted` | "SOLD" badge overlay |
+| `fair_market_value` | `number \| null` | Quant's FMV |
+| `deal_grade` | `S \| A \| B \| C \| F \| null` | Deal rating |
+| `ai_verdict` | `string \| null` | AI analysis text |
 
 ---
 
-**Questions?** Check `docs/Global_Feature_Manifest.md` for the full feature list.
+## ❓ Need Help?
+
+- **Full feature list:** `docs/Global_Feature_Manifest.md`
+- **Team roles & rules:** `docs/Undercut_Master_Protocol.md`
+- **Product spec:** `docs/Product_Spec_v1.md`
