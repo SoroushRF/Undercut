@@ -1,7 +1,7 @@
 # Frontend Team: Complete Setup & Task Guide
 
 **Last Updated:** 2026-01-19
-**Status:** Backend API is live. Contract is aligned.
+**Status:** Backend API Phase 9 Complete. All core endpoints are LIVE (Search, Trending, Saved Cars, Alerts).
 
 ---
 
@@ -226,22 +226,25 @@ Now your frontend can fetch from `http://localhost:8000`.
 | Feature | Reason | ETA |
 |---------|--------|-----|
 | Actual Login/Auth | Supabase Auth not integrated | TBD |
-| Save Car to Backend | `POST /saved-cars` doesn't exist | TBD |
-| Real Trending Data | `GET /cars/trending` doesn't exist | TBD |
-| User Profile Submit | `PATCH /users/me` doesn't exist | TBD |
-| Sniper Alert Submit | `POST /alerts` doesn't exist | TBD |
+| User Profile Submit | `PATCH /users/me` endpoint exists but auth is mocked | TBD |
 
 ---
 
 ## 🔗 Backend API Reference
 
 The API runs at `http://localhost:8000`. CORS is enabled for `localhost:3000`.
+Authentication: Use header `X-User-Id: <user_uuid>` (Mock Auth).
 
 | Endpoint | Method | Status | Notes |
 |----------|--------|--------|-------|
-| `/cars` | GET | ✅ Live | Returns all cars |
+| `/cars/search` | POST | ✅ Live | Search with filters |
+| `/cars/trending` | GET | ✅ Live | Get top S/A grade cars |
 | `/cars/{id}` | GET | ✅ Live | Returns single car |
+| `/cars/{id}/tco` | POST | ✅ Live | Calculate ownership cost |
 | `/cars/{id}/analyze` | POST | ✅ Live | Triggers AI analysis |
+| `/users/saved-cars` | GET | ✅ Live | List saved cars |
+| `/users/saved-cars/{id}` | POST | ✅ Live | Save a car |
+| `/alerts` | POST | ✅ Live | Create sniper alert |
 | `/docs` | GET | ✅ Live | Swagger UI |
 
 ---
