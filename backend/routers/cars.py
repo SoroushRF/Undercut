@@ -50,6 +50,28 @@ async def create_car(car: CarCreate, db: Session = Depends(get_db)):
     db_car.status = "active"
     db_car.ai_verdict = "Pending Analysis"
 
+    # --- Quant Service Integration ---
+    from backend.services.quant.fmv import estimate_fair_market_value
+    from backend.services.quant.deal_grader import calculate_deal_grade
+
+    # 1. Estimate Fair Market Value
+    fmv = estimate_fair_market_value(
+        make=db_car.make,
+        model=db_car.model,
+        year=db_car.year,
+        mileage=db_car.mileage,
+        trim=db_car.trim,
+        fuel_type=db_car.fuel_type
+    )
+    db_car.fair_market_value = fmv
+
+    # 2. Calculate Deal Grade
+    db_car.deal_grade = calculate_deal_grade(
+        listed_price=db_car.price,
+        fair_market_value=fmv
+    )
+    # ---------------------------------
+
     db.add(db_car)
     db.commit()
     db.refresh(db_car)
