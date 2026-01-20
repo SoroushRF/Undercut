@@ -289,3 +289,176 @@ async def search_cars(
     cars = query.offset(filters.skip).limit(filters.limit).all()
 
     return cars
+
+
+# ============================================================================
+# TCO ENDPOINT
+# ============================================================================
+
+class TCORequest(BaseModel):
+    """Request body for TCO calculation"""
+    annual_km: int = Field(15000, description="Expected annual driving distance (KM)", ge=1000, le=100000)
+    fuel_price: Optional[float] = Field(None, description="Override fuel price (CAD/L)", ge=0.5, le=5.0)
+    vehicle_type: str = Field("sedan", description="sedan, suv, truck, luxury, sports")
+
+
+class TCOResponse(BaseModel):
+    """Response for TCO calculation"""
+    car_id: str
+    car_title: str
+    purchase_price: float
+    monthly_total: float
+    monthly_fuel: float
+    monthly_depreciation: float
+    monthly_insurance: float
+    monthly_maintenance: float
+    annual_total: float
+    assumptions: dict
+
+
+@router.post("/{car_id}/tco", response_model=TCOResponse)
+@limiter.limit("30/minute")
+async def calculate_car_tco(
+    request: Request,
+    car_id: str,
+    tco_request: TCORequest,
+    db: Session = Depends(get_db),
+):
+    """
+    Calculate Total Cost of Ownership for a specific car.
+    
+    Returns monthly breakdown of:
+    - Fuel costs (based on your annual driving)
+    - Depreciation
+    - Insurance estimate
+    - Maintenance estimate
+    
+    Example:
+    ```json
+    {
+        "annual_km": 20000,
+        "vehicle_type": "sedan"
+    }
+    ```
+    """
+    from backend.services.tco import calculate_tco
+    
+    car = db.query(Car).filter(Car.id == car_id).first()
+    if not car:
+        raise HTTPException(status_code=404, detail="Car not found")
+    
+    # Determine fuel type
+    fuel_type = car.fuel_type or "gasoline"
+    
+    # Calculate TCO
+    result = calculate_tco(
+        purchase_price=car.price,
+        vehicle_year=car.year,
+        annual_km=tco_request.annual_km,
+        fuel_type=fuel_type,
+        fuel_price=tco_request.fuel_price,
+        vehicle_type=tco_request.vehicle_type,
+    )
+    
+    return TCOResponse(
+        car_id=car.id,
+        car_title=f"{car.year} {car.make} {car.model}",
+        purchase_price=car.price,
+        monthly_total=result.monthly_total,
+        monthly_fuel=result.monthly_fuel,
+        monthly_depreciation=result.monthly_depreciation,
+        monthly_insurance=result.monthly_insurance,
+        monthly_maintenance=result.monthly_maintenance,
+        annual_total=result.annual_total,
+        assumptions=result.assumptions,
+    )
+
+
+# ============================================================================
+# NEGOTIATION SCRIPT ENDPOINT
+# ============================================================================
+
+class NegotiationRequest(BaseModel):
+    """Request body for negotiation script"""
+    known_issues: Optional[str] = Field(None, description="Any known issues with the car")
+
+
+class NegotiationResponse(BaseModel):
+    """Response for negotiation script"""
+    car_id: str
+    car_title: str
+    deal_grade: str
+    listed_price: float
+    fair_market_value: float
+    price_difference: float
+    price_difference_pct: float
+    script: str
+    quick_tips: list
+
+
+@router.post("/{car_id}/negotiate", response_model=NegotiationResponse)
+@limiter.limit("10/minute")  # Stricter limit - AI calls are expensive
+async def generate_negotiation(
+    request: Request,
+    car_id: str,
+    neg_request: NegotiationRequest = None,
+    db: Session = Depends(get_db),
+):
+    """
+    Generate a negotiation script for a specific car.
+    
+    Uses AI to create personalized talking points based on:
+    - Price vs fair market value
+    - Deal grade
+    - Known issues
+    
+    Rate Limited: 10 requests/minute (AI cost protection)
+    """
+    from backend.services.ai import generate_negotiation_script, generate_quick_tips
+    from backend.services.quant.fmv import estimate_fair_market_value
+    
+    car = db.query(Car).filter(Car.id == car_id).first()
+    if not car:
+        raise HTTPException(status_code=404, detail="Car not found")
+    
+    # Calculate FMV
+    fmv = estimate_fair_market_value(
+        make=car.make,
+        model=car.model,
+        year=car.year,
+        mileage=car.mileage or 0,
+        fuel_type=car.fuel_type,
+    )
+    
+    price_diff = car.price - fmv
+    price_diff_pct = (price_diff / fmv) * 100 if fmv > 0 else 0
+    
+    # Get issues from request or use None
+    known_issues = neg_request.known_issues if neg_request else None
+    
+    # Generate the AI script
+    script = generate_negotiation_script(
+        make=car.make,
+        model_name=car.model,
+        year=car.year,
+        listed_price=car.price,
+        fair_market_value=fmv,
+        mileage=car.mileage or 0,
+        deal_grade=car.deal_grade or "B",
+        issues=known_issues,
+    )
+    
+    # Get quick tips (no AI, instant)
+    tips = generate_quick_tips(car.deal_grade or "B", price_diff_pct)
+    
+    return NegotiationResponse(
+        car_id=car.id,
+        car_title=f"{car.year} {car.make} {car.model}",
+        deal_grade=car.deal_grade or "B",
+        listed_price=car.price,
+        fair_market_value=round(fmv, 2),
+        price_difference=round(price_diff, 2),
+        price_difference_pct=round(price_diff_pct, 2),
+        script=script,
+        quick_tips=tips,
+    )
