@@ -15,7 +15,8 @@
 
 export { DealGradeGauge } from './DealGradeGauge';
 export { DealGradeGaugeDemo } from './DealGradeGaugeDemo';
+export { PriceComparisonBar } from './PriceComparisonBar';
+export { PriceComparisonBarDemo } from './PriceComparisonBarDemo';
 
 // Future exports will go here as we build more viz components:
-// export { PriceComparisonBar } from './PriceComparisonBar';
 // export { TCOChart } from './TCOChart';
