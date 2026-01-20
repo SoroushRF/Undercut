@@ -34,7 +34,7 @@
 - [x] **Task 3.2:** Configure SQLAlchemy Engine (`backend/database.py`).
 - [x] **Task 3.3:** Create DB Tables (Auto-create on startup via `main.py`).
 - [x] **Task 3.4:** Refactor Router to use Real DB (SQLAlchemy queries).
-- [ ] **Task 3.5:** **MIGRATE TO SUPABASE.** (Deferred - switch connection string when ready).
+- [x] **Task 3.5:** **MIGRATE TO SUPABASE.** ✅ (Connection Verified).
 
 ### ✅ Phase 4: The Brain (Gemini AI Integration)
 
@@ -122,6 +122,14 @@
 - [x] **Task 10.2:** Final Code Cleanup & Commenting.
 - [x] **Task 10.3:** Update FRONTEND_TASKS.md to mark backend endpoints as "Live".
 
+### 🔒 Phase 11: Supabase Security Hardening
+
+*Future work to secure the database for direct frontend access.*
+
+- [ ] **Task 11.1:** Enable RLS (Row Level Security) on all tables.
+- [ ] **Task 11.2:** Integrate Supabase Auth (JWT) with Backend (Replace Mock Auth).
+- [ ] **Task 11.3:** Setup Supabase Storage for User Uploads (Avatars).
+
 ---
 
 ## 3. Current Status
@@ -129,7 +137,8 @@
 
 **Completed Phases:** ALL PRIMARY PHASES COMPLETE (1-10).
 **Status:** 🟢 **READY FOR HANDOFF / FRONTEND INTEGRATION.**
-**Deferred:** Phase 3.5 (Supabase), Phase 9.4 (AI Mock Tests)
+**Deferred:** Phase 9.4 (AI Mock Tests)
+**Future:** Phase 11 (Supabase Security)
 
 ### Immediate Next Steps
 
