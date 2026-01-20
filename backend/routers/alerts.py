@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, Request, Header
 from sqlalchemy.orm import Session
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import uuid4
 
 from backend.models.alert import (
@@ -88,7 +88,7 @@ async def create_alert(
         drivetrain=alert_data.drivetrain,
         deal_grade_min=alert_data.deal_grade_min,
         is_active=True,
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
     )
 
     db.add(db_alert)
@@ -161,7 +161,7 @@ async def update_alert(
         raise HTTPException(status_code=404, detail="Alert not found")
 
     # Update only provided fields
-    update_data = alert_update.dict(exclude_unset=True)
+    update_data = alert_update.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(alert, field, value)
 

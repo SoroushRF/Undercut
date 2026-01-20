@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, Request
 from typing import List
 from uuid import uuid4
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 
 from backend.models.car import Car, CarCreate, CarResponse
@@ -33,13 +33,20 @@ async def create_car(car: CarCreate, db: Session = Depends(get_db)):
         # For now, just return existing. Logic could update price history here.
         return existing_car
 
-    new_car_data = car.dict()
+    new_car_data = car.model_dump()
+    
+    # Convert HttpUrl types to strings for SQLite compatibility
+    if "listing_url" in new_car_data and new_car_data["listing_url"]:
+        new_car_data["listing_url"] = str(new_car_data["listing_url"])
+    if "image_url" in new_car_data and new_car_data["image_url"]:
+        new_car_data["image_url"] = str(new_car_data["image_url"])
+    
     db_car = Car(**new_car_data)
 
     # Set System Fields
     db_car.id = str(uuid4())
-    db_car.created_at = datetime.utcnow()
-    db_car.last_seen_at = datetime.utcnow()
+    db_car.created_at = datetime.now(timezone.utc)
+    db_car.last_seen_at = datetime.now(timezone.utc)
     db_car.status = "active"
     db_car.ai_verdict = "Pending Analysis"
 

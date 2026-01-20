@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, Request, Header
 from sqlalchemy.orm import Session
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import uuid4
 
 from backend.models.user import (
@@ -70,8 +70,8 @@ async def create_user(user_data: UserCreate, db: Session = Depends(get_db)):
         id=user_data.id,
         email=user_data.email,
         profile_complete=False,
-        created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc),
     )
 
     db.add(db_user)
@@ -118,7 +118,7 @@ async def update_current_user(
         raise HTTPException(status_code=404, detail="User not found")
 
     # Update only provided fields
-    update_data = profile_update.dict(exclude_unset=True)
+    update_data = profile_update.model_dump(exclude_unset=True)
     
     for field, value in update_data.items():
         setattr(user, field, value)
@@ -127,7 +127,7 @@ async def update_current_user(
     if user.first_name and not user.profile_complete:
         user.profile_complete = True
 
-    user.updated_at = datetime.utcnow()
+    user.updated_at = datetime.now(timezone.utc)
 
     db.commit()
     db.refresh(user)
@@ -200,7 +200,7 @@ async def save_car(
         id=str(uuid4()),
         user_id=user_id,
         car_id=car_id,
-        saved_at=datetime.utcnow(),
+        saved_at=datetime.now(timezone.utc),
     )
 
     db.add(saved_car)

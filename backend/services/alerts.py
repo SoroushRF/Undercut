@@ -6,7 +6,7 @@ Called by The Hunter (Scraper) after ingesting new listings.
 """
 
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 
 from backend.models.alert import Alert
@@ -36,7 +36,7 @@ def check_alerts_for_car(car: Car, db: Session) -> List[Alert]:
             matching_alerts.append(alert)
             
             # Update last_triggered_at
-            alert.last_triggered_at = datetime.utcnow()
+            alert.last_triggered_at = datetime.now(timezone.utc)
     
     # Commit the timestamp updates
     if matching_alerts:

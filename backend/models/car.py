@@ -1,6 +1,6 @@
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl, ConfigDict
 from typing import Optional, Literal
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 
 from backend.database import Base
@@ -90,7 +90,7 @@ class Car(Base):
     description = Column(String, nullable=True)
 
     # === Timestamps ===
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     last_seen_at = Column(DateTime, nullable=True)  # When scraper last verified
 
     # === Status (Deleted Post Logic) ===
@@ -160,5 +160,4 @@ class CarResponse(CarBase):
     deal_grade: Optional[str] = None  # S, A, B, C, F
     ai_verdict: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

@@ -1,6 +1,6 @@
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field, EmailStr, ConfigDict
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 from backend.database import Base
 from sqlalchemy import Column, String, Integer, Float, DateTime, Boolean, JSON
@@ -41,8 +41,8 @@ class User(Base):
     profile_complete = Column(Boolean, default=False)  # Has completed onboarding?
     
     # === Timestamps ===
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
 
 # ============================================================================
@@ -78,8 +78,7 @@ class UserResponse(UserBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============================================================================
@@ -96,7 +95,7 @@ class SavedCar(Base):
     id = Column(String, primary_key=True, index=True)
     user_id = Column(String, index=True)  # FK to users.id
     car_id = Column(String, index=True)   # FK to cars.id
-    saved_at = Column(DateTime, default=datetime.utcnow)
+    saved_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     
     # Note: When car.status becomes 'sold' or 'deleted',
     # we don't delete this row. Frontend shows "SOLD" badge.
@@ -114,5 +113,4 @@ class SavedCarResponse(BaseModel):
     car_id: str
     saved_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

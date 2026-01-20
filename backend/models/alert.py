@@ -6,9 +6,9 @@ When new cars are scraped, they're checked against active alerts.
 If a match is found, the user is notified.
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 from backend.database import Base
 from sqlalchemy import Column, String, Integer, Float, DateTime, Boolean
@@ -57,7 +57,7 @@ class Alert(Base):
     is_active = Column(Boolean, default=True)  # User can pause alerts
     
     # === Timestamps ===
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     last_triggered_at = Column(DateTime, nullable=True)  # When last match found
 
 
@@ -119,5 +119,4 @@ class AlertResponse(AlertBase):
     created_at: datetime
     last_triggered_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
