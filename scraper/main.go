@@ -61,12 +61,13 @@ L:
 			fmt.Println("\n\n🛑 Shutdown signal received. Cleaning up...")
 			break L
 
-		case <-time.After(120 * time.Second): // Wait longer for the initial browser boot
+		case <-time.After(70 * time.Second):
 			if count > 0 {
-				fmt.Println("\n⌛ Session timed out: No more results found.")
+				fmt.Println("\n⌛ Session completion: No more results.")
 				break L
 			} else {
-				fmt.Println("\n⌛ Searching... (This can take 30-60s for the first page load)")
+				fmt.Println("\n⌛ Search Timeout: The browser might be stuck or blocked.")
+				break L
 			}
 		}
 	}
