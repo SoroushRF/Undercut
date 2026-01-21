@@ -14,16 +14,20 @@ import (
 
 func main() {
 	fmt.Println("\n" + strings.Repeat("=", 80))
-	fmt.Println("  🎯 THE HUNTER: AutoTrader Quantitative Engine")
-	fmt.Println("  Strategy: The Quant | Mode: Stealth Browser")
+	fmt.Println("  🎯 THE HUNTER: AutoTrader Targeted Quantitative Engine")
+	fmt.Println("  Strategy: The Quant | Mode: Stealth Targeted Search")
 	fmt.Println(strings.Repeat("=", 80))
 
 	results := make(chan models.CarListing)
 	count := 0
 	seen := make(map[string]bool)
 
-	// Launch scraper
-	go collectors.StartAutoTraderScraper(results)
+	// User configuration for the Hunt
+	targetMake := "Honda"
+	targetModel := "Civic"
+
+	// Launch scraper in a goroutine
+	go collectors.StartAutoTraderScraper(results, targetMake, targetModel)
 
 	// Setup signal handling
 	sigChan := make(chan os.Signal, 1)

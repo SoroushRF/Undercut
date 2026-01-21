@@ -13,13 +13,13 @@ import (
 	"github.com/chromedp/chromedp"
 )
 
-// StartAutoTraderScraper - Optimized for Debugging & Anti-Freeze
-func StartAutoTraderScraper(results chan<- models.CarListing) {
+// StartAutoTraderScraper - Optimized for Targeted Quantitative Extraction
+func StartAutoTraderScraper(results chan<- models.CarListing, make, model string) {
 	defer close(results)
 
 	// 1. Setup Browser Allocator
 	opts := append(chromedp.DefaultExecAllocatorOptions[:],
-		chromedp.Flag("headless", false), // 🟢 DEBUG: SEE the window to solve CAPTCHAs
+		chromedp.Flag("headless", false),
 		chromedp.Flag("disable-gpu", true),
 		chromedp.Flag("no-sandbox", true),
 		chromedp.Flag("disable-blink-features", "AutomationControlled"),
@@ -29,16 +29,16 @@ func StartAutoTraderScraper(results chan<- models.CarListing) {
 	allocCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
 	defer cancel()
 
-	// 2. Create Context with Logf to see what's happening internally
-	ctx, cancel := chromedp.NewContext(allocCtx, chromedp.WithLogf(log.Printf))
+	// 2. Create Context
+	ctx, cancel := chromedp.NewContext(allocCtx)
 	defer cancel()
 
-	// 🟢 SAFETY: Prevent infinite freeze with a timeout
-	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
+	ctx, cancel = context.WithTimeout(ctx, 90*time.Second)
 	defer cancel()
 
-	targetURL := "https://www.autotrader.ca/cars/on/toronto/"
-	fmt.Printf("🔍 Starting Hunt: %s\n", targetURL)
+	// 🟢 Targeting specific make and model
+	targetURL := fmt.Sprintf("https://www.autotrader.ca/cars/?loc=Toronto&make=%s&model=%s", make, model)
+	fmt.Printf("🔍 The Hunter is targeting: %s %s in Toronto\n", make, model)
 
 	var scrapedData []struct {
 		Text  string `json:"text"`
