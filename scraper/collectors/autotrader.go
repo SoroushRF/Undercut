@@ -32,7 +32,7 @@ func StartAutoTraderScraper(results chan<- models.CarListing, make, model string
 	ctx, cancel := chromedp.NewContext(allocCtx)
 	defer cancel()
 
-	ctx, cancel = context.WithTimeout(ctx, 90*time.Second)
+	ctx, cancel = context.WithTimeout(ctx, 160*time.Second)
 	defer cancel()
 
 	targetURL := fmt.Sprintf("https://www.autotrader.ca/cars/?loc=Toronto&make=%s&model=%s", make, model)

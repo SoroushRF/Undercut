@@ -57,7 +57,7 @@ L:
 			fmt.Println("\n\n🛑 Shutdown signal received. Cleaning up...")
 			break L
 
-		case <-time.After(70 * time.Second):
+		case <-time.After(150 * time.Second):
 			if len(cars) > 0 {
 				fmt.Println("\n⌛ Session completion: No more results.")
 				break L
@@ -75,8 +75,8 @@ L:
 
 	// Table Rows
 	for _, car := range cars {
-		fmt.Printf("%-6d | %-12s | %-12s | %10.2f | %12d\n",
-			car.Year, car.Make, car.Model, car.Price, car.Mileage)
+		fmt.Printf("%-6d | %-12s | %-12s | %10.2f | %12d | %-10s | %-8s\n",
+			car.Year, car.Make, car.Model, car.Price, car.Mileage, car.Transmission, car.Drivetrain)
 
 		// Hand over to backend API (Non-blocking)
 		go func(c models.CarListing) {
@@ -84,7 +84,7 @@ L:
 		}(car)
 	}
 
-	fmt.Println(strings.Repeat("-", 80))
+	fmt.Println(strings.Repeat("-", 100))
 	fmt.Printf("🎯 HUNT COMPLETE. Total Records Found: %d\n", len(cars))
 	fmt.Println(strings.Repeat("=", 80) + "\n")
 }
