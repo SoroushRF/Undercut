@@ -33,7 +33,7 @@ func StartAutoTraderScraper(results chan<- models.CarListing, make, model string
 	ctx, cancel := chromedp.NewContext(allocCtx)
 	defer cancel()
 
-	ctx, cancel = context.WithTimeout(ctx, 90*time.Second)
+	ctx, cancel = context.WithTimeout(ctx, 120*time.Second)
 	defer cancel()
 
 	// 🟢 Targeting specific make and model
@@ -51,19 +51,28 @@ func StartAutoTraderScraper(results chan<- models.CarListing, make, model string
 	err := chromedp.Run(ctx,
 		network.Enable(),
 		chromedp.Navigate("https://www.autotrader.ca"),
-		chromedp.Sleep(2*time.Second),
+		chromedp.Sleep(3*time.Second),
 	)
 	if err != nil {
-		log.Printf("❌ Warup Failed: %v", err)
+		log.Printf("❌ Warmup Failed: %v", err)
 		return
 	}
 
 	fmt.Println("🚀 Navigating to results page...")
+	var blocked bool
 	err = chromedp.Run(ctx,
 		chromedp.Navigate(targetURL),
 		// Wait specifically for either the results OR the error frame
 		chromedp.WaitVisible(`.result-item, .listing-details, #main-iframe`, chromedp.ByQuery),
+		chromedp.Evaluate(`!!document.querySelector("#main-iframe")`, &blocked),
 	)
+
+	if blocked {
+		fmt.Println("🛑 BLOCK DETECTED: AutoTrader has presented a challenge. Please check the browser window.")
+		// Wait a bit longer in case the user solves it manually
+		chromedp.Run(ctx, chromedp.Sleep(10*time.Second))
+	}
+
 	if err != nil {
 		log.Printf("❌ Navigation/Wait Failed: %v", err)
 		return
@@ -105,7 +114,8 @@ func StartAutoTraderScraper(results chan<- models.CarListing, make, model string
 			car.ID = fmt.Sprintf("%x", h)
 		}
 
-		if car.Price > 0 && car.Mileage > 0 && car.Title != "" {
+		// Filter out unrealistic prices (e.g. $100, $1000 placeholders or bi-weekly payments)
+		if car.Price > 2500 && car.Mileage > 0 && car.Title != "" {
 			results <- car
 		}
 	}
