@@ -17,10 +17,7 @@ func GetRandomUserAgent() string {
 	return userAgents[r.Intn(len(userAgents))]
 }
 
-// CleanPrice ensures we get a single valid price
 func CleanPrice(raw string) float64 {
-	// Look for pattern: $ followed by digits/commas/decimals
-	// We use [^0-9,.] to stop the match if we hit a space or a year (e.g. "$24,990 2022")
 	re := regexp.MustCompile(`\$[ ]*([0-9]{1,3}(,?[0-9]{3})*(\.[0-9]{2})?)`)
 	matches := re.FindStringSubmatch(raw)
 	if len(matches) < 2 {
@@ -34,21 +31,23 @@ func CleanPrice(raw string) float64 {
 
 func CleanMileage(raw string) int {
 	raw = strings.ToLower(raw)
-	// Match numbers before "km" or "kilometers"
-	re := regexp.MustCompile(`([0-9]{1,3}(,?[0-9]{3})*|([0-9.]+k))\s?(km|kilometers)`)
+	// Improved regex: looks for digits with optional separators (up to 7 digits for cars) or 'k' notation
+	re := regexp.MustCompile(`([0-9]{1,3}([\s,]?[0-9]{3}){1,2}|[0-9]{1,7}|[0-9.]+k)\s?(km|kilometers)`)
 	matches := re.FindStringSubmatch(raw)
 	if len(matches) < 2 {
 		return 0
 	}
 
 	valStr := matches[1]
+	// fmt.Printf("DEBUG: Mileage Raw -> [%s]\n", valStr)
 	if strings.Contains(valStr, "k") {
 		numStr := strings.ReplaceAll(valStr, "k", "")
 		val, _ := strconv.ParseFloat(numStr, 64)
 		return int(val * 1000)
 	}
 
-	clean := strings.ReplaceAll(valStr, ",", "")
+	// Remove commas and spaces
+	clean := strings.NewReplacer(",", "", " ", "").Replace(valStr)
 	mileage, _ := strconv.Atoi(clean)
 	return mileage
 }
