@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"sort"
 	"strings"
 	"syscall"
 	"time"
@@ -14,33 +15,31 @@ import (
 )
 
 func main() {
-	header := `
-  🕵️  THE DETECTIVE: Live Car Value Analysis
-  ==========================================
-  Powered by Undercut & Gemini AI
-  ==========================================
-  `
-	fmt.Println(header)
-
-	// Detective Target Configuration
-	targetMake := "Mazda"
-	targetModel := "3"
-
-	fmt.Printf("🔍 Detective Input: %s %s | Location: Toronto\n", targetMake, targetModel)
-	fmt.Println("🕵️  Wait a moment while I infiltrate the market and gather intel...")
+	fmt.Println("\n" + strings.Repeat("=", 80))
+	fmt.Println("  🎯 THE HUNTER: AutoTrader Targeted Quantitative Engine")
+	fmt.Println("  Strategy: The Quant | Mode: Stealth Targeted Search")
+	fmt.Println(strings.Repeat("=", 80))
 
 	results := make(chan models.CarListing)
-	var cars []models.CarListing
-	count := 0
 	seen := make(map[string]bool)
 
-	// Launch Top 20 "On Demand" Scrape
+	// User configuration for the Hunt
+	targetMake := "Honda"
+	targetModel := "Civic"
+
+	// Launch scraper
 	go collectors.StartAutoTraderScraper(results, targetMake, targetModel)
 
+	// Setup signal handling
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
-	// Data Collection Phase
+	// Table Header
+	fmt.Printf("\n%-6s | %-12s | %-12s | %-10s | %-12s\n", "YEAR", "MAKE", "MODEL", "PRICE ($)", "MILEAGE (km)")
+	fmt.Println(strings.Repeat("-", 80))
+
+	var cars []models.CarListing
+
 L:
 	for {
 		select {
@@ -53,42 +52,39 @@ L:
 			}
 			seen[car.ID] = true
 			cars = append(cars, car)
-			count++
-
-			// Visual progress for the Hackathon
-			fmt.Printf("✅ Intel Gathered: %s ($%.2f)\n", car.Title, car.Price)
-
-			// Collect top 20 for analysis
-			if count >= 20 {
-				break L
-			}
 
 		case <-sigChan:
-			fmt.Println("\n\n🛑 Investigation Aborted.")
-			os.Exit(0)
+			fmt.Println("\n\n🛑 Shutdown signal received. Cleaning up...")
+			break L
 
-		case <-time.After(300 * time.Second):
-			if count > 0 {
+		case <-time.After(70 * time.Second):
+			if len(cars) > 0 {
+				fmt.Println("\n⌛ Session completion: No more results.")
+				break L
+			} else {
+				fmt.Println("\n⌛ Search Timeout: The browser might be stuck or blocked.")
 				break L
 			}
-			fmt.Println("\n⌛ The trail went cold. (Timeout)")
-			break L
 		}
 	}
 
-	fmt.Printf("\n📉 Raw Data Collected: %d listings.\n", count)
-	fmt.Println("🧠 Handing over intel to Gemini for deep value analysis...")
-	fmt.Println(strings.Repeat("-", 45))
+	// 🎨 Sort Findings by Year (Newest First)
+	sort.Slice(cars, func(i, j int) bool {
+		return cars[i].Year > cars[j].Year
+	})
 
-	// Analysis Phase
-	verdict, err := analyzer.AnalyzeGems(cars)
-	if err != nil {
-		fmt.Printf("❌ Detective's Brain Freeze: %v\n", err)
-	} else {
-		fmt.Println("\n" + verdict)
+	// Table Rows
+	for _, car := range cars {
+		fmt.Printf("%-6d | %-12s | %-12s | %10.2f | %12d\n",
+			car.Year, car.Make, car.Model, car.Price, car.Mileage)
+
+		// Hand over to backend API (Non-blocking)
+		go func(c models.CarListing) {
+			_ = analyzer.PostCarToBackend(c)
+		}(car)
 	}
 
-	fmt.Println("\n" + strings.Repeat("=", 45))
-	fmt.Printf("🎯 INVESTIGATION COMPLETE | %s\n", time.Now().Format("15:04:05"))
-	fmt.Println(strings.Repeat("=", 45))
+	fmt.Println(strings.Repeat("-", 80))
+	fmt.Printf("🎯 HUNT COMPLETE. Total Records Found: %d\n", len(cars))
+	fmt.Println(strings.Repeat("=", 80) + "\n")
 }
