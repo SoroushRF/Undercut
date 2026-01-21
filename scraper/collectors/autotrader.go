@@ -32,7 +32,7 @@ func StartAutoTraderScraper(results chan<- models.CarListing, make, model string
 	ctx, cancel := chromedp.NewContext(allocCtx)
 	defer cancel()
 
-	ctx, cancel = context.WithTimeout(ctx, 90*time.Second)
+	ctx, cancel = context.WithTimeout(ctx, 160*time.Second)
 	defer cancel()
 
 	targetURL := fmt.Sprintf("https://www.autotrader.ca/cars/?loc=Toronto&make=%s&model=%s", make, model)
@@ -42,6 +42,7 @@ func StartAutoTraderScraper(results chan<- models.CarListing, make, model string
 		Text  string `json:"text"`
 		Title string `json:"title"`
 		URL   string `json:"url"`
+		Specs string `json:"specs"` // Added to catch sub-details
 	}
 
 	// 2. Navigation
@@ -73,10 +74,12 @@ func StartAutoTraderScraper(results chan<- models.CarListing, make, model string
 			Array.from(document.querySelectorAll('.result-item, .listing-details')).map(el => {
 				const titleEl = el.querySelector('h2, .result-title, .listing-title');
 				const linkEl = el.querySelector('a[href*="/a/"]');
+				const specsEl = el.querySelector('.item-proxies, .listing-stats, .specs'); // Attempt to find specs
 				return {
 					text: el.innerText,
 					title: titleEl ? titleEl.innerText : "",
-					url: linkEl ? linkEl.href : ""
+					url: linkEl ? linkEl.href : "",
+					specs: specsEl ? specsEl.innerText : ""
 				};
 			})
 		`, &scrapedData),
@@ -93,7 +96,31 @@ func StartAutoTraderScraper(results chan<- models.CarListing, make, model string
 		car.Title = strings.TrimSpace(data.Title)
 		car.SourceURL = data.URL
 		car.Price = CleanPrice(data.Text)
+		car.Currency = "CAD" // Default for AutoTrader.ca
 		car.Mileage = CleanMileage(data.Text)
+		car.MileageUnit = "km"
+
+		// Detailed Parsing
+		year, mk, md, trim := ParseTitle(car.Title, make, model)
+		car.Year = year
+		car.Make = mk
+		car.Model = md
+		car.Trim = trim
+
+		// Extract additional details from specs/text if possible
+		if strings.Contains(strings.ToLower(data.Text), "automatic") {
+			car.Transmission = "Automatic"
+		} else if strings.Contains(strings.ToLower(data.Text), "manual") {
+			car.Transmission = "Manual"
+		}
+
+		if strings.Contains(strings.ToLower(data.Text), "awd") {
+			car.Drivetrain = "AWD"
+		} else if strings.Contains(strings.ToLower(data.Text), "fwd") {
+			car.Drivetrain = "FWD"
+		} else if strings.Contains(strings.ToLower(data.Text), "rwd") {
+			car.Drivetrain = "RWD"
+		}
 
 		if car.SourceURL != "" {
 			car.ID = extractAutoTraderID(car.SourceURL)

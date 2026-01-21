@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"sort"
 	"strings"
 	"syscall"
 	"time"
 
+	"github.com/SoroushRF/Undercut/scraper/analyzer"
 	"github.com/SoroushRF/Undercut/scraper/collectors"
 	"github.com/SoroushRF/Undercut/scraper/models"
 )
@@ -19,7 +21,6 @@ func main() {
 	fmt.Println(strings.Repeat("=", 80))
 
 	results := make(chan models.CarListing)
-	count := 0
 	seen := make(map[string]bool)
 
 	// User configuration for the Hunt
@@ -34,8 +35,10 @@ func main() {
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
 	// Table Header
-	fmt.Printf("\n%-45s | %-12s | %-12s\n", "CAR MODEL / TITLE", "PRICE ($)", "MILEAGE (km)")
+	fmt.Printf("\n%-6s | %-12s | %-12s | %-10s | %-12s\n", "YEAR", "MAKE", "MODEL", "PRICE ($)", "MILEAGE (km)")
 	fmt.Println(strings.Repeat("-", 80))
+
+	var cars []models.CarListing
 
 L:
 	for {
@@ -44,29 +47,18 @@ L:
 			if !ok {
 				break L
 			}
-
-			// Deduplication by ID
 			if seen[car.ID] {
 				continue
 			}
 			seen[car.ID] = true
-			count++
-
-			// Clean title for display (truncate if too long)
-			displayTitle := car.Title
-			if len(displayTitle) > 42 {
-				displayTitle = displayTitle[:40] + "..."
-			}
-
-			fmt.Printf("%-45s | %10.2f | %12d\n",
-				displayTitle, car.Price, car.Mileage)
+			cars = append(cars, car)
 
 		case <-sigChan:
 			fmt.Println("\n\n🛑 Shutdown signal received. Cleaning up...")
 			break L
 
-		case <-time.After(70 * time.Second):
-			if count > 0 {
+		case <-time.After(150 * time.Second):
+			if len(cars) > 0 {
 				fmt.Println("\n⌛ Session completion: No more results.")
 				break L
 			} else {
@@ -76,7 +68,23 @@ L:
 		}
 	}
 
+	// 🎨 Sort Findings by Year (Newest First)
+	sort.Slice(cars, func(i, j int) bool {
+		return cars[i].Year > cars[j].Year
+	})
+
+	// Table Rows
+	for _, car := range cars {
+		fmt.Printf("%-6d | %-12s | %-12s | %10.2f | %12d\n",
+			car.Year, car.Make, car.Model, car.Price, car.Mileage)
+
+		// Hand over to backend API (Non-blocking)
+		go func(c models.CarListing) {
+			_ = analyzer.PostCarToBackend(c)
+		}(car)
+	}
+
 	fmt.Println(strings.Repeat("-", 80))
-	fmt.Printf("🎯 HUNT COMPLETE. Total Records Found: %d\n", count)
+	fmt.Printf("🎯 HUNT COMPLETE. Total Records Found: %d\n", len(cars))
 	fmt.Println(strings.Repeat("=", 80) + "\n")
 }
