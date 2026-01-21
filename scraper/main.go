@@ -26,7 +26,7 @@ func main() {
 	targetMake := "Honda"
 	targetModel := "Civic"
 
-	// Launch scraper in a goroutine
+	// Launch scraper
 	go collectors.StartAutoTraderScraper(results, targetMake, targetModel)
 
 	// Setup signal handling
@@ -65,12 +65,12 @@ L:
 			fmt.Println("\n\n🛑 Shutdown signal received. Cleaning up...")
 			break L
 
-		case <-time.After(120 * time.Second):
+		case <-time.After(70 * time.Second):
 			if count > 0 {
 				fmt.Println("\n⌛ Session completion: No more results.")
 				break L
 			} else {
-				fmt.Println("\n⌛ Search Timeout: The browser might be stuck or blocked. Please check the Chrome window for CAPTCHAs or challenges.")
+				fmt.Println("\n⌛ Search Timeout: The browser might be stuck or blocked.")
 				break L
 			}
 		}

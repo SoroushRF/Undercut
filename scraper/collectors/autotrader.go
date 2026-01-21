@@ -13,13 +13,13 @@ import (
 	"github.com/chromedp/chromedp"
 )
 
-// StartAutoTraderScraper - Optimized for Targeted Quantitative Extraction
+// StartAutoTraderScraper - This is the last verified working version
 func StartAutoTraderScraper(results chan<- models.CarListing, make, model string) {
 	defer close(results)
 
 	// 1. Setup Browser Allocator
 	opts := append(chromedp.DefaultExecAllocatorOptions[:],
-		chromedp.Flag("headless", false),
+		chromedp.Flag("headless", false), // Must be false to see and solve challenges
 		chromedp.Flag("disable-gpu", true),
 		chromedp.Flag("no-sandbox", true),
 		chromedp.Flag("disable-blink-features", "AutomationControlled"),
@@ -29,14 +29,12 @@ func StartAutoTraderScraper(results chan<- models.CarListing, make, model string
 	allocCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
 	defer cancel()
 
-	// 2. Create Context
 	ctx, cancel := chromedp.NewContext(allocCtx)
 	defer cancel()
 
-	ctx, cancel = context.WithTimeout(ctx, 120*time.Second)
+	ctx, cancel = context.WithTimeout(ctx, 90*time.Second)
 	defer cancel()
 
-	// 🟢 Targeting specific make and model
 	targetURL := fmt.Sprintf("https://www.autotrader.ca/cars/?loc=Toronto&make=%s&model=%s", make, model)
 	fmt.Printf("🔍 The Hunter is targeting: %s %s in Toronto\n", make, model)
 
@@ -46,12 +44,12 @@ func StartAutoTraderScraper(results chan<- models.CarListing, make, model string
 		URL   string `json:"url"`
 	}
 
-	// 3. Execution with detailed logging
+	// 2. Navigation
 	fmt.Println("⏳ Warming up session (visiting home page)...")
 	err := chromedp.Run(ctx,
 		network.Enable(),
 		chromedp.Navigate("https://www.autotrader.ca"),
-		chromedp.Sleep(3*time.Second),
+		chromedp.Sleep(2*time.Second),
 	)
 	if err != nil {
 		log.Printf("❌ Warmup Failed: %v", err)
@@ -59,28 +57,18 @@ func StartAutoTraderScraper(results chan<- models.CarListing, make, model string
 	}
 
 	fmt.Println("🚀 Navigating to results page...")
-	var blocked bool
 	err = chromedp.Run(ctx,
 		chromedp.Navigate(targetURL),
-		// Wait specifically for either the results OR the error frame
 		chromedp.WaitVisible(`.result-item, .listing-details, #main-iframe`, chromedp.ByQuery),
-		chromedp.Evaluate(`!!document.querySelector("#main-iframe")`, &blocked),
 	)
-
-	if blocked {
-		fmt.Println("🛑 BLOCK DETECTED: AutoTrader has presented a challenge. Please check the browser window.")
-		// Wait a bit longer in case the user solves it manually
-		chromedp.Run(ctx, chromedp.Sleep(10*time.Second))
-	}
-
 	if err != nil {
-		log.Printf("❌ Navigation/Wait Failed: %v", err)
+		log.Printf("❌ Navigation Failed: %v", err)
 		return
 	}
 
 	fmt.Println("📊 Page content detected! Extracting data...")
 	err = chromedp.Run(ctx,
-		chromedp.Sleep(3*time.Second), // Let JS settle
+		chromedp.Sleep(3*time.Second),
 		chromedp.Evaluate(`
 			Array.from(document.querySelectorAll('.result-item, .listing-details')).map(el => {
 				const titleEl = el.querySelector('h2, .result-title, .listing-title');
@@ -99,7 +87,7 @@ func StartAutoTraderScraper(results chan<- models.CarListing, make, model string
 		return
 	}
 
-	// 4. Processing
+	// 3. Processing
 	for _, data := range scrapedData {
 		var car models.CarListing
 		car.Title = strings.TrimSpace(data.Title)
@@ -114,7 +102,7 @@ func StartAutoTraderScraper(results chan<- models.CarListing, make, model string
 			car.ID = fmt.Sprintf("%x", h)
 		}
 
-		// Filter out unrealistic prices (e.g. $100, $1000 placeholders or bi-weekly payments)
+		// Filter out unrealistic prices as requested
 		if car.Price > 2500 && car.Mileage > 0 && car.Title != "" {
 			results <- car
 		}
