@@ -1,13 +1,20 @@
-import { MOCK_CARS } from "@/lib/mock-data";
-import { Car } from "@/lib/types";
+import { useState, useEffect } from 'react';
+import { Car } from '@/lib/types';
+import { MOCK_CARS } from '@/lib/mock-data';
 
-// This hook serves as the "Dummy Gate"
-// The Integrator uses this to build pages before the FastAPI backend is online.
-export const useCars = () => {
-  // Logic can be added here to simulate loading states or errors
-  const isLoading = false;
-  const error = null;
-  const data: Car[] = MOCK_CARS;
+export function useCars() {
+  const [cars, setCars] = useState<Car[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  return { data, isLoading, error };
-};
+  useEffect(() => {
+    // Simulate API delay
+    const timer = setTimeout(() => {
+      setCars(MOCK_CARS);
+      setLoading(false);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  return { cars, loading };
+}
