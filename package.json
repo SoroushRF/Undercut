@@ -1,0 +1,19 @@
+{
+  "name": "undercut",
+  "version": "1.0.0",
+  "description": "Undercut is a \"Data Fusion\" application designed to revolutionize car pricing and negotiation. It combines real-time data scraping, market validation, and advanced AI analysis to provide users with competitive insights.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "playwright test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.57.0"
+  }
+}
