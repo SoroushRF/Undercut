@@ -38,7 +38,7 @@ export function DealCard({
     return (
         <Card
             className={cn(
-                "group overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-transparent hover:border-zinc-200",
+                "group overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-transparent hover:border-border",
                 className
             )}
             onClick={onClick}
@@ -72,13 +72,13 @@ export function DealCard({
 
             <CardContent className="p-5">
                 <div className="flex flex-col gap-1">
-                    <h3 className="text-xl font-bold tracking-tight text-zinc-900">
+                    <h3 className="text-xl font-bold tracking-tight text-foreground">
                         {year} {make} {model}
                     </h3>
-                    {trim && <p className="text-sm font-medium text-zinc-500 line-clamp-1">{trim}</p>}
+                    {trim && <p className="text-sm font-medium text-muted-foreground line-clamp-1">{trim}</p>}
                 </div>
 
-                <div className="mt-4 flex items-center justify-between text-zinc-500">
+                <div className="mt-4 flex items-center justify-between text-muted-foreground">
                     <div className="flex items-center gap-1.5">
                         <Gauge className="h-4 w-4" />
                         <span className="text-sm font-medium">{(mileage / 1000).toFixed(1)}k km</span>
@@ -91,7 +91,7 @@ export function DealCard({
             </CardContent>
 
             <CardFooter className="px-5 pb-5 pt-0">
-                <div className="w-full rounded-xl bg-zinc-50 p-2 text-center text-xs font-bold uppercase tracking-wider text-zinc-400 transition-colors group-hover:bg-zinc-100 group-hover:text-zinc-600">
+                <div className="w-full rounded-xl bg-muted p-2 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground transition-colors group-hover:bg-accent group-hover:text-accent-foreground">
                     View Full Analysis
                 </div>
             </CardFooter>
