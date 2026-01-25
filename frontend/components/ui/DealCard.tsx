@@ -1,3 +1,5 @@
+'use client';
+
 // frontend/components/ui/DealCard.tsx
 import * as React from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/Card";
@@ -14,7 +16,7 @@ export interface DealCardProps {
     price: number;
     mileage: number;
     location: string;
-    grade: "S" | "A" | "B" | "C" | "D" | "F";
+    grade: "S" | "A" | "B" | "C" | "F";
     imageUrl?: string;
     className?: string;
     onClick?: () => void;

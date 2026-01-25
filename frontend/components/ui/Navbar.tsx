@@ -1,3 +1,5 @@
+'use client';
+
 // frontend/components/ui/Navbar.tsx
 import * as React from "react";
 import { Search, User, Bell, Car } from "lucide-react";

@@ -1,10 +1,12 @@
+'use client';
+
 // frontend/components/ui/Badge.tsx
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
     variant?: "primary" | "secondary" | "outline" | "destructive" | "success" | "warning";
-    grade?: "S" | "A" | "B" | "C" | "D" | "F";
+    grade?: "S" | "A" | "B" | "C" | "F";
 }
 
 const badgeVariants = {
@@ -21,7 +23,6 @@ const gradeColors = {
     A: "bg-emerald-500 text-white",
     B: "bg-blue-500 text-white",
     C: "bg-amber-500 text-white",
-    D: "bg-orange-500 text-white",
     F: "bg-red-500 text-white",
 };
 

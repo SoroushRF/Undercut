@@ -1,3 +1,5 @@
+'use client';
+
 // frontend/components/ui/SearchInput.tsx
 import * as React from "react";
 import { Search, X } from "lucide-react";
