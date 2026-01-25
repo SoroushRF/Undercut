@@ -1,3 +1,5 @@
+'use client';
+
 // frontend/components/ui/Dialog.tsx
 import * as React from "react";
 import { cn } from "@/lib/utils";

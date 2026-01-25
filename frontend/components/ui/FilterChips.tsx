@@ -1,3 +1,5 @@
+'use client';
+
 // frontend/components/ui/FilterChips.tsx
 import * as React from "react";
 import { cn } from "@/lib/utils";
