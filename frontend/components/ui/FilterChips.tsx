@@ -18,8 +18,8 @@ export function FilterChip({ label, selected, onClick, className }: FilterChipPr
             className={cn(
                 "inline-flex items-center rounded-xl px-4 py-2 text-sm font-semibold transition-all duration-200 border",
                 selected
-                    ? "bg-black text-white border-black shadow-md shadow-black/10"
-                    : "bg-white text-zinc-600 border-zinc-200 hover:bg-zinc-50 hover:border-zinc-300",
+                    ? "bg-primary text-primary-foreground border-primary shadow-md shadow-primary/10"
+                    : "bg-card text-muted-foreground border-border hover:bg-muted hover:border-primary/50",
                 className
             )}
         >

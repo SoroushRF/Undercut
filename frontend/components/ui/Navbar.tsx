@@ -11,7 +11,6 @@ export function Navbar({ className }: { className?: string }) {
     return (
         <nav className={cn(
             "sticky top-0 z-40 w-full border-b border-border bg-background/80 backdrop-blur-xl",
-            "dark:border-zinc-800 dark:bg-zinc-950/80",
             className
         )}>
             <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">

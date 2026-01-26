@@ -26,74 +26,30 @@
         --radius: 0.75rem;
     }
 
-    /* Midnight Theme (Gunmetal Blue Palette) */
+    /* Midnight Theme (Deep Purple-Black) */
     .dark {
-        --background: 222 47% 7%;
-        --foreground: 210 40% 98%;
-        --card: 222 47% 10%;
-        --card-foreground: 210 40% 98%;
-        --popover: 222 47% 10%;
-        --popover-foreground: 210 40% 98%;
-        --primary: 199 89% 48%;
-        --primary-foreground: 222 47% 11%;
-        --secondary: 222 47% 15%;
-        --secondary-foreground: 210 40% 98%;
-        --muted: 222 47% 14%;
-        --muted-foreground: 215 20% 65%;
-        --accent: 222 47% 18%;
-        --accent-foreground: 210 40% 98%;
-        --destructive: 0 84% 60%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 222 47% 18%;
-        --input: 222 47% 18%;
-        --ring: 199 89% 48%;
-    }
-
-    /* Dark Theme (OLED Pure Black Palette) */
-    .theme-midnight {
-        --background: 0 0% 0%;
-        --foreground: 0 0% 98%;
-        --card: 0 0% 3%;
-        --card-foreground: 0 0% 100%;
-        --popover: 0 0% 3%;
-        --popover-foreground: 0 0% 100%;
-        --primary: 250 100% 63%;
-        --primary-foreground: 0 0% 100%;
-        --secondary: 0 0% 10%;
-        --secondary-foreground: 0 0% 98%;
-        --muted: 0 0% 8%;
-        --muted-foreground: 0 0% 60%;
-        --accent: 250 100% 63%;
-        --accent-foreground: 250 100% 63%;
+        --background: 270 50% 1%;
+        /* Very Deep Purple-Black */
+        --foreground: 270 10% 98%;
+        --card: 270 30% 3%;
+        --card-foreground: 270 10% 100%;
+        --popover: 270 30% 3%;
+        --popover-foreground: 270 10% 100%;
+        --primary: 270 90% 65%;
+        /* Vibrant Purple */
+        --primary-foreground: 270 10% 100%;
+        --secondary: 270 20% 10%;
+        --secondary-foreground: 270 10% 98%;
+        --muted: 270 20% 8%;
+        --muted-foreground: 270 10% 65%;
+        --accent: 270 90% 65%;
+        --accent-foreground: 270 90% 65%;
         --destructive: 0 84% 60%;
         --destructive-foreground: 0 0% 100%;
-        --border: 0 0% 12%;
-        --input: 0 0% 12%;
-        --ring: 250 100% 63%;
+        --border: 270 20% 12%;
+        --input: 270 20% 12%;
+        --ring: 270 90% 65%;
         --radius: 1rem;
-    }
-
-    /* Forest Theme (Deep Moss Palette) */
-    .theme-forest {
-        --background: 142 76% 4%;
-        --foreground: 142 5% 95%;
-        --card: 142 70% 6%;
-        --card-foreground: 142 5% 95%;
-        --popover: 142 70% 6%;
-        --popover-foreground: 142 5% 95%;
-        --primary: 142 71% 45%;
-        --primary-foreground: 142 10% 8%;
-        --secondary: 142 30% 12%;
-        --secondary-foreground: 142 5% 95%;
-        --muted: 142 30% 10%;
-        --muted-foreground: 142 15% 65%;
-        --accent: 142 30% 12%;
-        --accent-foreground: 142 5% 95%;
-        --destructive: 0 84% 60%;
-        --destructive-foreground: 142 5% 95%;
-        --border: 142 30% 14%;
-        --input: 142 30% 14%;
-        --ring: 142 71% 45%;
     }
 
     * {

@@ -1,3 +1,5 @@
+'use client';
+
 // frontend/components/ui/input.tsx
 import * as React from "react";
 import { cn } from "@/lib/utils";
@@ -16,8 +18,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(function Inp
             <input
                 ref={ref}
                 className={cn(
-                    "h-10 w-full rounded-xl border bg-white px-3 text-sm outline-none transition",
-                    "border-zinc-200 focus:border-zinc-400 focus:ring-2 focus:ring-zinc-200",
+                    "h-10 w-full rounded-xl border bg-background px-3 text-sm outline-none transition",
+                    "border-border focus:border-primary focus:ring-4 focus:ring-primary/10",
                     error ? "border-red-500 focus:border-red-600 focus:ring-red-200" : "",
                     className
                 )}
