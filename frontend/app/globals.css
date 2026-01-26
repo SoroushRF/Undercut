@@ -59,4 +59,33 @@
     body {
         @apply bg-background text-foreground transition-colors duration-500 ease-in-out;
     }
+
+    /* Custom Selection Styling */
+    ::selection {
+        @apply bg-primary/20 text-foreground;
+    }
+
+    /* Premium Scrollbar Styling (Especially for Windows) */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        @apply bg-transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply rounded-full bg-muted-foreground/20 border-2 border-solid border-transparent bg-clip-padding transition-colors;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        @apply bg-muted-foreground/40;
+    }
+
+    /* For Firefox */
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: hsl(var(--muted-foreground) / 0.2) transparent;
+    }
 }
