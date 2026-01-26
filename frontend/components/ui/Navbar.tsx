@@ -1,11 +1,19 @@
 'use client';
 
-// frontend/components/ui/Navbar.tsx
 import * as React from "react";
-import { Search, User, Bell, Car } from "lucide-react";
+import { Search, User, Bell, Car, Heart, Settings, LogOut, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { ThemeSelector } from "@/components/ui/ThemeSelector";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/DropdownMenu";
+import { toast } from "sonner";
 
 export function Navbar({ className }: { className?: string }) {
     return (
@@ -31,22 +39,52 @@ export function Navbar({ className }: { className?: string }) {
                 <div className="flex items-center gap-2 sm:gap-4">
                     <ThemeSelector />
 
-                    <button className="relative rounded-xl p-2.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-all">
+                    <button
+                        onClick={() => toast.info("You have no new notifications")}
+                        className="relative rounded-xl p-2.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
+                    >
                         <Bell className="h-5 w-5" />
-                        <span className="absolute right-2.5 top-2.5 flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-white" />
+                        <span className="absolute right-2.5 top-2.5 flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" />
                     </button>
 
-                    <div className="h-8 w-[1px] bg-zinc-100 mx-2" />
+                    <div className="h-8 w-[1px] bg-border mx-2" />
 
-                    <button className="flex items-center gap-2 rounded-xl bg-muted pl-3 pr-1.5 py-1.5 text-sm font-bold text-foreground border border-border transition-all hover:bg-accent hover:text-accent-foreground active:scale-95">
-                        <span>Profile</span>
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-card border border-border shadow-sm">
-                            <User className="h-4 w-4" />
-                        </div>
-                    </button>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button className="flex items-center gap-2 rounded-xl bg-muted pl-3 pr-1.5 py-1.5 text-sm font-bold text-foreground border border-border transition-all hover:bg-accent hover:text-accent-foreground active:scale-95 outline-none">
+                                <span className="hidden sm:inline">Account</span>
+                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-card border border-border shadow-sm">
+                                    <User className="h-4 w-4" />
+                                </div>
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-56">
+                            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className="gap-2 cursor-pointer">
+                                <User className="h-4 w-4" /> Profile
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="gap-2 cursor-pointer">
+                                <Heart className="h-4 w-4" /> Watchlist
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="gap-2 cursor-pointer">
+                                <ShieldCheck className="h-4 w-4" /> Membership
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="gap-2 cursor-pointer">
+                                <Settings className="h-4 w-4" /> Settings
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                                className="gap-2 text-red-500 focus:text-red-500 cursor-pointer"
+                                onClick={() => toast.error("Logout feature coming soon!")}
+                            >
+                                <LogOut className="h-4 w-4" /> Log out
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
 
                     {/* Mobile Search Toggle */}
-                    <button className="md:hidden rounded-xl p-2.5 text-zinc-500 hover:bg-zinc-50">
+                    <button className="md:hidden rounded-xl p-2.5 text-muted-foreground hover:bg-muted">
                         <Search className="h-5 w-5" />
                     </button>
                 </div>
