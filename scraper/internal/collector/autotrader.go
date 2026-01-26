@@ -107,13 +107,17 @@ func (c *AutoTraderCollector) Scrape(make, modelName string, results chan<- mode
 		return
 	}
 
-	// 3. Handle Cookie Banner if it exists
-	fmt.Println("⏳ Checking for cookie banner...")
-	acceptBtn := "button:has-text('Accept'), button:has-text('Agree'), #onetrust-accept-btn-handler"
-	if err := page.Click(acceptBtn, playwright.PageClickOptions{
-		Timeout: playwright.Float(5000),
-	}); err == nil {
-		fmt.Println("✅ Cookie banner accepted.")
+	// 3. Handle Cookie Banner and Modals
+	fmt.Println("⏳ Checking for overlays...")
+
+	// Accept Cookies
+	cookieBtn := "#onetrust-accept-btn-handler, button:has-text('Accept')"
+	_ = page.Click(cookieBtn, playwright.PageClickOptions{Timeout: playwright.Float(3000)})
+
+	// Close "Discover What's New" modal if it exists
+	modalBtn := "button:has-text('Skip intro'), button:has-text('See what’s new')"
+	if err := page.Click(modalBtn, playwright.PageClickOptions{Timeout: playwright.Float(3000)}); err == nil {
+		fmt.Println("✅ Dismissed onboarding modal.")
 	}
 
 	// 4. Scroll to trigger lazy loading and look human
@@ -130,12 +134,7 @@ func (c *AutoTraderCollector) Scrape(make, modelName string, results chan<- mode
 	})
 	if err != nil {
 		title, _ := page.Title()
-		html, _ := page.Content()
 		log.Printf("❌ Results did not appear. Title: %s", title)
-
-		if strings.Contains(strings.ToLower(html), "incapsula") || strings.Contains(strings.ToLower(html), "distil") {
-			log.Printf("⚠️ BOT DETECTION TRIGGERED: Page content contains anti-bot markers.")
-		}
 
 		_, _ = page.Screenshot(playwright.PageScreenshotOptions{
 			Path: playwright.String("debug.png"),
@@ -200,6 +199,8 @@ func (c *AutoTraderCollector) Scrape(make, modelName string, results chan<- mode
 		car.Mileage = extractMileage(mileageStr)
 
 		car.Year = extractYear(title)
+		car.FuelEconomy = extractFuelEconomy(text)
+		car.BodyType = extractBodyType(text)
 
 		// Simple filtering
 		if car.Price > 500 && car.Year > 0 {
@@ -268,4 +269,44 @@ func extractYear(title string) int {
 		return val
 	}
 	return 0
+}
+
+func extractFuelEconomy(raw string) string {
+	raw = strings.ToLower(raw)
+	// Improved Regex: Handles spaces like "8.5 L / 100 km" or "30 mpg"
+	re := regexp.MustCompile(`([0-9.]+\s*l\s*/\s*100\s*km)|([0-9.]+\s*mpg)`)
+	match := re.FindString(raw)
+	if match == "" {
+		return ""
+	}
+	return strings.ToUpper(strings.ReplaceAll(match, " ", ""))
+}
+
+func extractBodyType(raw string) string {
+	raw = strings.ToLower(raw)
+	// Priority list: most specific first
+	bodyTypes := []struct {
+		key      string
+		patterns []string
+	}{
+		{"SUV", []string{"suv", "crossover"}},
+		{"Hatchback", []string{"hatchback", "hatch"}},
+		{"Coupe", []string{"coupe", "2 dr", "2dr"}},
+		{"Sedan", []string{"sedan", "4 dr", "4dr"}},
+		{"Truck", []string{"truck", "pickup"}},
+		{"Convertible", []string{"convertible", "cabriolet", "soft top"}},
+		{"Wagon", []string{"wagon", "estate"}},
+		{"Van", []string{"van", "minivan"}},
+	}
+
+	for _, bt := range bodyTypes {
+		for _, pattern := range bt.patterns {
+			// Check for word boundaries to avoid partial matches (e.g., "hatch" inside "thatch")
+			re := regexp.MustCompile(`\b` + regexp.QuoteMeta(pattern) + `\b`)
+			if re.MatchString(raw) {
+				return bt.key
+			}
+		}
+	}
+	return ""
 }
