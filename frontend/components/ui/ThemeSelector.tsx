@@ -8,6 +8,7 @@ type Theme = 'light' | 'midnight';
 
 export function ThemeSelector({ className }: { className?: string }) {
     const [theme, setTheme] = React.useState<Theme>('light');
+    const [mounted, setMounted] = React.useState(false);
 
     const applyTheme = React.useCallback((newTheme: Theme) => {
         const root = document.documentElement;
@@ -22,8 +23,8 @@ export function ThemeSelector({ className }: { className?: string }) {
         setTheme(newTheme);
     }, []);
 
-    // Initial mount
     React.useEffect(() => {
+        setMounted(true);
         const savedTheme = localStorage.getItem('undercut-theme') as Theme || 'light';
         setTheme(savedTheme);
         applyTheme(savedTheme);
@@ -33,6 +34,9 @@ export function ThemeSelector({ className }: { className?: string }) {
         const nextTheme = theme === 'light' ? 'midnight' : 'light';
         applyTheme(nextTheme);
     };
+
+    // Prevent hydration mismatch flicker - render invisible placeholder until mounted
+    if (!mounted) return <div className="h-10 w-10" />;
 
     return (
         <button
