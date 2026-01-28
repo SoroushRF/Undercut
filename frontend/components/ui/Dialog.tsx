@@ -65,20 +65,20 @@ export function Dialog({
         aria-modal="true"
         aria-labelledby={title ? "dialog-title" : undefined}
         className={cn(
-          "relative w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl transition-all",
+          "relative w-full max-w-lg overflow-hidden rounded-3xl bg-card shadow-2xl transition-all",
           "animate-in zoom-in-95 slide-in-from-bottom-2 duration-300",
           "mx-4"
         )}
       >
         {(title || description) && (
-          <div className="border-b border-zinc-100 p-6">
+          <div className="border-b border-border p-6">
             {title && (
-              <h2 id="dialog-title" className="text-xl font-bold tracking-tight text-zinc-900">
+              <h2 id="dialog-title" className="text-xl font-bold tracking-tight text-foreground">
                 {title}
               </h2>
             )}
             {description && (
-              <p className="mt-2 text-sm text-zinc-500">
+              <p className="mt-2 text-sm text-muted-foreground">
                 {description}
               </p>
             )}
@@ -87,7 +87,7 @@ export function Dialog({
 
         <div className="p-6">{children}</div>
 
-        <div className="flex items-center justify-end gap-3 bg-zinc-50/50 border-t border-zinc-100 p-6">
+        <div className="flex items-center justify-end gap-3 bg-muted/50 border-t border-border p-6">
           {footer ?? (
             <Button variant="secondary" onClick={() => onOpenChange(false)}>
               {closeLabel}

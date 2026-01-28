@@ -21,7 +21,7 @@ export function SearchInput({ className, onClear, value, onChange, ...props }: S
                 value={value}
                 onChange={onChange}
                 className={cn(
-                    "h-12 w-full rounded-2xl border border-zinc-200 bg-white pl-12 pr-12 text-sm font-medium transition-all focus:border-zinc-400 focus:outline-none focus:ring-4 focus:ring-zinc-100 placeholder:text-zinc-400",
+                    "h-12 w-full rounded-2xl border border-border bg-background pl-12 pr-12 text-sm font-medium transition-all focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 placeholder:text-muted-foreground",
                 )}
                 {...props}
             />

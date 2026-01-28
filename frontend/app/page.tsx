@@ -16,17 +16,17 @@ export default function Home() {
     return (
         <PageTransition>
             <Navbar />
-            <main className="min-h-screen bg-zinc-50 p-8">
+            <main className="min-h-screen bg-background p-8">
                 <div className="mx-auto max-w-7xl">
                     <section className="mb-8">
-                        <h1 className="text-3xl font-bold text-zinc-900">Trending Deals</h1>
-                        <p className="text-zinc-500 mt-1">Find the best underpriced cars in the market.</p>
+                        <h1 className="text-3xl font-bold text-foreground">Trending Deals</h1>
+                        <p className="text-muted-foreground mt-1">Find the best underpriced cars in the market.</p>
                     </section>
 
                     {/* Task 4.1: TCO Chart - Market Analysis Preview */}
-                    <section className="mb-10 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-                        <h2 className="text-xl font-bold text-zinc-900 mb-2">Market Analysis Preview</h2>
-                        <p className="text-sm text-zinc-500 mb-4">
+                    <section className="mb-10 rounded-2xl border border-border bg-card p-6 shadow-sm">
+                        <h2 className="text-xl font-bold text-foreground mb-2">Market Analysis Preview</h2>
+                        <p className="text-sm text-muted-foreground mb-4">
                             5-year cost of ownership comparison. Select a timeframe to see projected costs.
                         </p>
                         <TcoChart />
