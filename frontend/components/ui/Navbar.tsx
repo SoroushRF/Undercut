@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from "react";
+import Link from "next/link";
 import { Search, User, Bell, Car, Heart, Settings, LogOut, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SearchInput } from "@/components/ui/SearchInput";
@@ -23,12 +24,12 @@ export function Navbar({ className }: { className?: string }) {
         )}>
             <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
                 {/* Logo */}
-                <div className="flex items-center gap-2 cursor-pointer transition-opacity hover:opacity-80">
+                <Link href="/" className="flex items-center gap-2 cursor-pointer transition-opacity hover:opacity-80">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-lg shadow-black/10">
                         <Car className="h-6 w-6 text-primary-foreground" />
                     </div>
                     <span className="text-xl font-black tracking-tighter text-foreground">UNDERCUT</span>
-                </div>
+                </Link>
 
                 {/* Search Bar - Center */}
                 <div className="hidden max-w-md flex-1 px-8 md:block">
@@ -61,17 +62,29 @@ export function Navbar({ className }: { className?: string }) {
                         <DropdownMenuContent align="end" className="w-56">
                             <DropdownMenuLabel>My Account</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="gap-2 cursor-pointer">
-                                <User className="h-4 w-4" /> Profile
+                            
+                            <DropdownMenuItem asChild>
+                                <Link href="/profile" className="gap-2 cursor-pointer flex items-center w-full">
+                                    <User className="h-4 w-4" /> Profile
+                                </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="gap-2 cursor-pointer">
-                                <Heart className="h-4 w-4" /> Watchlist
+                            
+                            <DropdownMenuItem asChild>
+                                <Link href="/watchlist" className="gap-2 cursor-pointer flex items-center w-full">
+                                    <Heart className="h-4 w-4" /> Watchlist
+                                </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="gap-2 cursor-pointer">
-                                <ShieldCheck className="h-4 w-4" /> Membership
+                            
+                            <DropdownMenuItem asChild>
+                                <Link href="/membership" className="gap-2 cursor-pointer flex items-center w-full">
+                                    <ShieldCheck className="h-4 w-4" /> Membership
+                                </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="gap-2 cursor-pointer">
-                                <Settings className="h-4 w-4" /> Settings
+                            
+                            <DropdownMenuItem asChild>
+                                <Link href="/settings" className="gap-2 cursor-pointer flex items-center w-full">
+                                    <Settings className="h-4 w-4" /> Settings
+                                </Link>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem

@@ -1,9 +1,9 @@
 // Bug fixed by Architect - 'use client' added to SearchInput.tsx
 import { Navbar } from "@/components/ui/Navbar";
 import { ShieldCheck, Wallet } from "lucide-react";
-import { DealCard } from "@/components/ui/DealCard"; // Use if we want to show deals
 import { MOCK_CARS } from "@/lib/mock-data";
 import { TcoChart } from "@/components/viz/TcoChart";
+import { SearchSection } from "@/components/home/SearchSection";
 
 // UX Engineer Motion Components
 import { PageTransition } from "@/components/motion/PageTransition";
@@ -130,46 +130,7 @@ export default function Home() {
                 </div>
 
                 {/* Search Section */}
-                <div className="bg-card px-8 py-24 border-y border-border">
-                    <div className="mx-auto max-w-4xl text-center">
-                        <h2 className="mb-12 text-3xl font-bold text-foreground">Find your perfect match</h2>
-
-                        {/* Body Types */}
-                        <div className="mb-12">
-                            <h3 className="mb-6 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Body Type</h3>
-                            <div className="no-scrollbar flex gap-4 overflow-x-auto pb-4 sm:justify-center">
-                                {["SUV", "Sedan", "Coupe", "Truck", "Hatchback", "Van"].map((type) => (
-                                    <button 
-                                        key={type}
-                                        className="flex h-24 w-32 min-w-[8rem] flex-col items-center justify-center rounded-xl border border-border bg-secondary/10 transition hover:border-primary hover:bg-card"
-                                    >
-                                        <span className="text-sm font-medium text-foreground">{type}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Power Types */}
-                        <div className="mb-12">
-                             <h3 className="mb-6 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Power Source</h3>
-                             <div className="flex justify-center gap-4 flex-wrap">
-                                {["Gas", "Electric", "Hybrid"].map((type) => (
-                                    <button 
-                                        key={type}
-                                        className="rounded-full border border-border px-6 py-2 text-sm font-medium text-muted-foreground transition hover:border-primary hover:text-primary"
-                                    >
-                                        {type}
-                                    </button>
-                                ))}
-                             </div>
-                        </div>
-
-                        {/* Search Button */}
-                        <button className="w-full rounded-xl bg-primary px-8 py-4 text-lg font-bold text-primary-foreground transition hover:opacity-90 sm:w-auto">
-                            Search Inventory
-                        </button>
-                    </div>
-                </div>
+                <SearchSection />
 
                 {/* Scrollable Brand List Section */}
                 <div className="bg-secondary/20 py-24">
