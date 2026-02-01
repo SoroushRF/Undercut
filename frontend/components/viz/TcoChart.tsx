@@ -49,7 +49,7 @@ export const TcoChart = ({ className }: TcoChartProps) => {
     if (!mounted) return <div className="w-full h-[350px]" />;
 
     return (
-        <div className={`w-full h-[350px] bg-card p-4 rounded-lg border shadow-sm ${className}`}>
+        <div className={`w-full h-[350px] bg-card p-4 rounded-lg border shadow-sm ${className || ''}`}>
             <div className="mb-4 flex items-center justify-between">
                 <div>
                     <h3 className="text-lg font-semibold">Total Cost of Ownership</h3>
