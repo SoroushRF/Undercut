@@ -96,12 +96,16 @@ func (c *AutoTraderCollector) Scrape(make, modelName string, results chan<- mode
 	}
 	time.Sleep(5 * time.Second)
 
-	targetURL := fmt.Sprintf("https://www.autotrader.ca/cars/?loc=Toronto&make=%s&model=%s", make, modelName)
-	fmt.Printf("🎯 Targeting: %s %s in Toronto...\n", make, modelName)
+	// 2. Navigate to results using path-based URL (proven to work)
+	pathMake := strings.ToLower(strings.ReplaceAll(make, " ", "%20"))
+	pathModel := strings.ToLower(strings.ReplaceAll(modelName, " ", "%20"))
+	targetURL := fmt.Sprintf("https://www.autotrader.ca/cars/%s/%s/on/toronto/", pathMake, pathModel)
 
-	// 2. Navigate to results
+	fmt.Printf("🎯 Targeting: %s %s in Toronto (%s)...\n", make, modelName, targetURL)
+
 	if _, err := page.Goto(targetURL, playwright.PageGotoOptions{
-		WaitUntil: playwright.WaitUntilStateCommit,
+		WaitUntil: playwright.WaitUntilStateDomcontentloaded,
+		Timeout:   playwright.Float(60000),
 	}); err != nil {
 		log.Printf("❌ Navigation failed: %v", err)
 		return
@@ -129,15 +133,15 @@ func (c *AutoTraderCollector) Scrape(make, modelName string, results chan<- mode
 
 	// 5. Wait for results
 	fmt.Println("⏳ Waiting for car listings...")
-	_, err = page.WaitForSelector(".result-item, .listing-details", playwright.PageWaitForSelectorOptions{
-		Timeout: playwright.Float(20000),
+	_, err = page.WaitForSelector(".result-item", playwright.PageWaitForSelectorOptions{
+		Timeout: playwright.Float(30000),
 	})
 	if err != nil {
 		title, _ := page.Title()
 		log.Printf("❌ Results did not appear. Title: %s", title)
 
 		_, _ = page.Screenshot(playwright.PageScreenshotOptions{
-			Path: playwright.String("debug.png"),
+			Path: playwright.String("debug_error.png"),
 		})
 		return
 	}
@@ -166,6 +170,12 @@ func (c *AutoTraderCollector) Scrape(make, modelName string, results chan<- mode
 		}
 
 		if title == "" {
+			continue
+		}
+
+		// 🛡️ STRICT FILTERING: AutoTrader shows "sponsored" or "similar" cars.
+		// Ensure the title actually contains the model we want.
+		if !strings.Contains(strings.ToLower(title), strings.ToLower(modelName)) {
 			continue
 		}
 
