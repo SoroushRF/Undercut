@@ -14,7 +14,7 @@ export const SoldBadge = () => {
             >
                 <div className="flex flex-col items-center">
                     <div className="flex items-center gap-2">
-                        <CheckCircle2 className="w-6 h-6 text-green-600" />
+                        <CheckCircle2 className="w-6 h-6 text-success" />
                         <span className="text-2xl font-black uppercase tracking-widest">Sold</span>
                     </div>
                     <span className="text-xs font-bold tracking-wider text-muted-foreground uppercase mt-1">
