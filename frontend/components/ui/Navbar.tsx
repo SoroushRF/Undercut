@@ -23,7 +23,16 @@ export function Navbar({ className }: { className?: string }) {
 
                 {/* Search Bar - Center */}
                 <div className="hidden max-w-md flex-1 px-8 md:block">
-                    <SearchInput placeholder="Search for deals..." className="h-10" />
+                     {/* Note: In a real app keypress Enter would trigger navigation. For now, we trust the user to type and click or we wrap.
+                         To keep it simple and INTEGRATION focused, I'll wrap it in a form. 
+                      */}
+                    <form onSubmit={(e) => {
+                        e.preventDefault();
+                        // Minimal logical integration without changing UI component structure deeply
+                        window.location.href = '/search'; 
+                    }}>
+                        <SearchInput placeholder="Search for deals..." className="h-10" />
+                    </form>
                 </div>
 
                 {/* Right Actions */}
