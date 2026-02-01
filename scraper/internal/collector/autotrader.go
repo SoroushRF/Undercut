@@ -97,8 +97,8 @@ func (c *AutoTraderCollector) Scrape(make, modelName string, results chan<- mode
 	time.Sleep(5 * time.Second)
 
 	// 2. Navigate to results using path-based URL (proven to work)
-	pathMake := strings.ToLower(strings.ReplaceAll(make, " ", "%20"))
-	pathModel := strings.ToLower(strings.ReplaceAll(modelName, " ", "%20"))
+	pathMake := strings.ToLower(strings.ReplaceAll(make, " ", "-"))
+	pathModel := strings.ToLower(strings.ReplaceAll(modelName, " ", "-"))
 	targetURL := fmt.Sprintf("https://www.autotrader.ca/cars/%s/%s/on/toronto/", pathMake, pathModel)
 
 	fmt.Printf("🎯 Targeting: %s %s in Toronto (%s)...\n", make, modelName, targetURL)
@@ -133,7 +133,7 @@ func (c *AutoTraderCollector) Scrape(make, modelName string, results chan<- mode
 
 	// 5. Wait for results
 	fmt.Println("⏳ Waiting for car listings...")
-	_, err = page.WaitForSelector(".result-item", playwright.PageWaitForSelectorOptions{
+	_, err = page.WaitForSelector(".result-item, article", playwright.PageWaitForSelectorOptions{
 		Timeout: playwright.Float(30000),
 	})
 	if err != nil {
@@ -147,26 +147,14 @@ func (c *AutoTraderCollector) Scrape(make, modelName string, results chan<- mode
 	}
 
 	// Extract data
-	elements, _ := page.QuerySelectorAll(".result-item")
+	elements, _ := page.QuerySelectorAll(".result-item, article")
 	fmt.Printf("📊 Found %d potential cars. Extracting details...\n", len(elements))
 
 	for _, el := range elements {
-		text, _ := el.InnerText()
-		text = strings.ToLower(text)
-
-		titleEl, _ := el.QuerySelector(".result-title")
+		titleEl, _ := el.QuerySelector(".result-title, h2, h3, [data-testid='listing-title']")
 		var title string
 		if titleEl != nil {
 			title, _ = titleEl.InnerText()
-		}
-
-		linkEl, _ := el.QuerySelector("a.result-title-link")
-		var url string
-		if linkEl != nil {
-			urlRaw, _ := linkEl.GetAttribute("href")
-			if urlRaw != "" {
-				url = "https://www.autotrader.ca" + urlRaw
-			}
 		}
 
 		if title == "" {
@@ -177,6 +165,22 @@ func (c *AutoTraderCollector) Scrape(make, modelName string, results chan<- mode
 		// Ensure the title actually contains the model we want.
 		if !strings.Contains(strings.ToLower(title), strings.ToLower(modelName)) {
 			continue
+		}
+
+		text, _ := el.InnerText()
+		text = strings.ToLower(text)
+
+		var url string
+		linkEl, _ := el.QuerySelector("a.result-title-link, a[href*='/a/'], a[data-testid='listing-link']")
+		if linkEl != nil {
+			href, _ := linkEl.GetAttribute("href")
+			if href != "" {
+				if strings.HasPrefix(href, "http") {
+					url = href
+				} else {
+					url = "https://www.autotrader.ca" + href
+				}
+			}
 		}
 
 		car := model.CarListing{
@@ -209,7 +213,6 @@ func (c *AutoTraderCollector) Scrape(make, modelName string, results chan<- mode
 		car.Mileage = extractMileage(mileageStr)
 
 		car.Year = extractYear(title)
-		car.FuelEconomy = extractFuelEconomy(text)
 		car.BodyType = extractBodyType(text)
 
 		// Simple filtering
@@ -279,17 +282,6 @@ func extractYear(title string) int {
 		return val
 	}
 	return 0
-}
-
-func extractFuelEconomy(raw string) string {
-	raw = strings.ToLower(raw)
-	// Improved Regex: Handles spaces like "8.5 L / 100 km" or "30 mpg"
-	re := regexp.MustCompile(`([0-9.]+\s*l\s*/\s*100\s*km)|([0-9.]+\s*mpg)`)
-	match := re.FindString(raw)
-	if match == "" {
-		return ""
-	}
-	return strings.ToUpper(strings.ReplaceAll(match, " ", ""))
 }
 
 func extractBodyType(raw string) string {

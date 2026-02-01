@@ -32,13 +32,13 @@ func main() {
 	go c.Scrape(targetMake, targetModel, results)
 
 	// 4. Print results as they come in
-	fmt.Printf("\n%-6s | %-12s | %-12s | %-10s | %-12s | %-10s | %-10s\n", "YEAR", "MAKE", "MODEL", "PRICE ($)", "MILEAGE (km)", "FUEL", "BODY")
-	fmt.Println(strings.Repeat("-", 90))
+	fmt.Printf("\n%-6s | %-12s | %-12s | %-10s | %-12s | %-10s\n", "YEAR", "MAKE", "MODEL", "PRICE ($)", "MILEAGE (km)", "BODY")
+	fmt.Println(strings.Repeat("-", 80))
 
 	count := 0
 	for car := range results {
-		fmt.Printf("%-6d | %-12s | %-12s | %10.2f | %12d | %-10s | %-10s\n",
-			car.Year, car.Make, car.Model, car.Price, car.Mileage, car.FuelEconomy, car.BodyType)
+		fmt.Printf("%-6d | %-12s | %-12s | %10.2f | %12d | %-10s\n",
+			car.Year, car.Make, car.Model, car.Price, car.Mileage, car.BodyType)
 		count++
 	}
 
