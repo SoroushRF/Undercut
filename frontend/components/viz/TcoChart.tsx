@@ -25,6 +25,11 @@ interface TcoChartProps {
 
 export const TcoChart = ({ className }: TcoChartProps) => {
     const [years, setYears] = React.useState(5);
+    const [mounted, setMounted] = React.useState(false);
+
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // Generate dynamic data based on selected years
     const data = React.useMemo(() => {
@@ -40,6 +45,8 @@ export const TcoChart = ({ className }: TcoChartProps) => {
             };
         });
     }, [years]);
+
+    if (!mounted) return <div className="w-full h-[350px]" />;
 
     return (
         <div className={`w-full h-[350px] bg-card p-4 rounded-lg border shadow-sm ${className}`}>
@@ -59,7 +66,7 @@ export const TcoChart = ({ className }: TcoChartProps) => {
                 </select>
             </div>
 
-            <ResponsiveContainer width="100%" height="80%">
+            <ResponsiveContainer width="100%" height="80%" minWidth={0}>
                 <LineChart data={data}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
                     <XAxis
