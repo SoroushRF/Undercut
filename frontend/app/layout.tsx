@@ -29,7 +29,10 @@ export default function RootLayout({
                             background: 'hsl(var(--card))',
                             color: 'hsl(var(--foreground))',
                             border: '1px solid hsl(var(--border))',
-                        }
+                            borderRadius: 'var(--radius)',
+                            fontFamily: 'inherit',
+                        },
+                        className: "font-sans",
                     }}
                 />
             </body>
