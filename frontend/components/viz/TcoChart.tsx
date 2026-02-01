@@ -68,22 +68,29 @@ export const TcoChart = ({ className }: TcoChartProps) => {
 
             <ResponsiveContainer width="100%" height="80%" minWidth={0}>
                 <LineChart data={data}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                     <XAxis
                         dataKey="year"
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: '#6b7280', fontSize: 12 }}
+                        tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
                         dy={10}
                     />
                     <YAxis
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: '#6b7280', fontSize: 12 }}
+                        tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
                         tickFormatter={(value) => `$${value / 1000}k`}
                     />
                     <Tooltip
-                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                        contentStyle={{
+                            borderRadius: '12px',
+                            border: '1px solid hsl(var(--border))',
+                            background: 'hsl(var(--card))',
+                            color: 'hsl(var(--foreground))',
+                            boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'
+                        }}
+                        itemStyle={{ color: 'hsl(var(--foreground))' }}
                         formatter={(value: any) => [`$${value.toLocaleString()}`, '']}
                     />
                     <Legend wrapperStyle={{ paddingTop: '10px' }} />
@@ -92,7 +99,7 @@ export const TcoChart = ({ className }: TcoChartProps) => {
                         type="monotone"
                         dataKey="marketAverage"
                         name="Market Average"
-                        stroke="#9ca3af"
+                        stroke="hsl(var(--muted-foreground) / 0.5)"
                         strokeWidth={2}
                         strokeDasharray="5 5"
                         dot={false}
@@ -101,9 +108,9 @@ export const TcoChart = ({ className }: TcoChartProps) => {
                         type="monotone"
                         dataKey="cost"
                         name="Your Car"
-                        stroke="#10b981"
+                        stroke="hsl(var(--success))"
                         strokeWidth={3}
-                        activeDot={{ r: 6 }}
+                        activeDot={{ r: 6, fill: 'hsl(var(--success))', strokeWidth: 2, stroke: 'hsl(var(--background))' }}
                     />
                 </LineChart>
             </ResponsiveContainer>

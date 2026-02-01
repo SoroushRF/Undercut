@@ -9,7 +9,6 @@ interface FilterSidebarProps {
 }
 
 export function FilterSidebar({ className }: FilterSidebarProps) {
-    // In a real app, these would be controlled by URL state or a parent handler
     const [priceRange, setPriceRange] = React.useState({ min: "", max: "" });
     const [selectedMake, setSelectedMake] = React.useState<string | undefined>();
     const [selectedTransmission, setSelectedTransmission] = React.useState<string | undefined>();
@@ -18,20 +17,20 @@ export function FilterSidebar({ className }: FilterSidebarProps) {
         <div className={`space-y-8 ${className}`}>
             {/* Price Range */}
             <div>
-                <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-zinc-900">Price Range</h3>
+                <h3 className="mb-4 text-xs font-black uppercase tracking-widest text-muted-foreground">Price Range</h3>
                 <div className="flex items-center gap-2">
                     <input
                         type="number"
                         placeholder="Min"
-                        className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-black focus:ring-1 focus:ring-black"
+                        className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-muted-foreground/50"
                         value={priceRange.min}
                         onChange={(e) => setPriceRange({ ...priceRange, min: e.target.value })}
                     />
-                    <span className="text-zinc-400">-</span>
+                    <span className="text-muted-foreground font-bold opacity-50 px-1">-</span>
                     <input
                         type="number"
                         placeholder="Max"
-                        className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-black focus:ring-1 focus:ring-black"
+                        className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-muted-foreground/50"
                         value={priceRange.max}
                         onChange={(e) => setPriceRange({ ...priceRange, max: e.target.value })}
                     />
@@ -40,18 +39,20 @@ export function FilterSidebar({ className }: FilterSidebarProps) {
 
             {/* Make */}
             <div>
-                <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-zinc-900">Make</h3>
-                <div className="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+                <h3 className="mb-4 text-xs font-black uppercase tracking-widest text-muted-foreground">Make</h3>
+                <div className="space-y-1.5 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
                     {["Tesla", "BMW", "Toyota", "Honda", "Mercedes-Benz", "Audi", "Ford", "Mazda"].map((make) => (
-                        <label key={make} className="flex items-center gap-3 rounded-lg p-2 hover:bg-zinc-100 cursor-pointer transition">
+                        <label key={make} className="flex items-center gap-3 rounded-xl p-2.5 hover:bg-muted cursor-pointer transition-colors group">
                             <input
                                 type="radio"
                                 name="make"
-                                className="h-4 w-4 rounded-full border-zinc-300 text-black focus:ring-black"
+                                className="h-4 w-4 border-border bg-background text-primary focus:ring-primary transition-all"
                                 checked={selectedMake === make}
                                 onChange={() => setSelectedMake(make)}
                             />
-                            <span className="text-sm font-medium text-zinc-700">{make}</span>
+                            <span className={make === selectedMake ? "text-sm font-bold text-foreground" : "text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors"}>
+                                {make}
+                            </span>
                         </label>
                     ))}
                 </div>
@@ -59,12 +60,17 @@ export function FilterSidebar({ className }: FilterSidebarProps) {
 
             {/* Deal Grade */}
             <div>
-                <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-zinc-900">Deal Grade</h3>
-                <div className="space-y-2">
+                <h3 className="mb-4 text-xs font-black uppercase tracking-widest text-muted-foreground">Deal Grade</h3>
+                <div className="grid grid-cols-3 gap-2">
                     {["S", "A", "B", "C", "D", "F"].map((grade) => (
-                        <label key={grade} className="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" className="h-4 w-4 rounded border-zinc-300 text-black focus:ring-black" />
-                            <span className="text-sm font-medium text-zinc-700">{gradeLabels[grade]}</span>
+                        <label key={grade} className="flex flex-col items-center gap-2 cursor-pointer group rounded-lg border border-border/50 p-2 hover:bg-muted/50 transition-colors">
+                            <input
+                                type="checkbox"
+                                className="h-4 w-4 rounded border-border bg-background text-primary focus:ring-primary transition-all"
+                            />
+                            <span className="text-[10px] font-black uppercase tracking-tight group-hover:text-primary transition-colors text-center" title={gradeLabels[grade]}>
+                                {grade}
+                            </span>
                         </label>
                     ))}
                 </div>
@@ -72,7 +78,7 @@ export function FilterSidebar({ className }: FilterSidebarProps) {
 
             {/* Transmission */}
             <div>
-                <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-zinc-900">Transmission</h3>
+                <h3 className="mb-4 text-xs font-black uppercase tracking-widest text-muted-foreground">Transmission</h3>
                 <FilterChipsGroup
                     options={["Automatic", "Manual", "CVT"]}
                     value={selectedTransmission}
@@ -80,7 +86,7 @@ export function FilterSidebar({ className }: FilterSidebarProps) {
                 />
             </div>
 
-            <button className="w-full rounded-xl bg-zinc-900 py-3 text-sm font-bold text-white shadow-md transition hover:bg-zinc-800 active:scale-95">
+            <button className="w-full rounded-xl bg-primary py-4 text-sm font-black uppercase tracking-widest text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:opacity-90 active:scale-95">
                 Apply Filters
             </button>
         </div>

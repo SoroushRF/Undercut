@@ -18,11 +18,18 @@ export default function Home() {
         <PageTransition>
             <Navbar />
 
+            {/* Dynamic Ambient Background Glows */}
+            <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+                <div className="absolute -top-[10%] -left-[10%] h-[40%] w-[40%] rounded-full bg-primary/5 blur-[120px] transition-colors duration-1000" />
+                <div className="absolute top-[40%] -right-[10%] h-[40%] w-[40%] rounded-full bg-primary/10 blur-[120px] transition-colors duration-1000" />
+                <div className="absolute -bottom-[10%] left-[20%] h-[40%] w-[40%] rounded-full bg-primary/5 blur-[120px] transition-colors duration-1000" />
+            </div>
+
             {/* Main Content Area */}
-            <main className="min-h-screen bg-background text-foreground">
+            <main className="relative min-h-screen bg-transparent text-foreground">
 
                 {/* Hero Section */}
-                <div className="mx-auto max-w-7xl px-8 py-12 lg:py-24">
+                <div className="relative mx-auto max-w-7xl px-8 py-12 lg:py-24">
                     <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center">
                         {/* Left Column: Text + Buttons */}
                         <div className="space-y-8">
@@ -46,12 +53,15 @@ export default function Home() {
                         </div>
 
                         {/* Right Column: Hero Image */}
-                        <div className="relative overflow-hidden rounded-2xl shadow-xl border border-border">
-                            <img
-                                src="/hero.png"
-                                alt="Undercut Car Marketplace"
-                                className="h-full w-full object-cover"
-                            />
+                        <div className="relative group">
+                            <div className="absolute -inset-4 rounded-[2.5rem] bg-primary/20 blur-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                            <div className="relative overflow-hidden rounded-2xl shadow-xl border border-border bg-card">
+                                <img
+                                    src="/hero.png"
+                                    alt="Undercut Car Marketplace"
+                                    className="h-full w-full object-cover"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -73,32 +83,32 @@ export default function Home() {
                 </div>
 
                 {/* New Sections: Shop Smart & Finding your fit */}
-                <div className="flex min-h-screen flex-col md:flex-row">
+                <div className="flex min-h-screen flex-col md:flex-row border-y border-border">
                     {/* Shop Smart */}
-                    <div className="relative flex w-full flex-col justify-end p-12 md:w-1/2 min-h-[500px]">
+                    <div className="group relative flex w-full flex-col justify-end p-12 md:w-1/2 min-h-[500px] overflow-hidden">
                         <img
                             src="/shop-smart.png"
                             alt="Shop Smart"
-                            className="absolute inset-0 h-full w-full object-cover"
+                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
-                        <div className="absolute inset-0 bg-black/40" />
-                        <h2 className="relative text-4xl font-bold text-white">Shop Smart</h2>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent group-hover:from-primary/60 transition-colors duration-500" />
+                        <h2 className="relative text-4xl font-black text-white tracking-tight">Shop Smart</h2>
                     </div>
 
                     {/* Finding your fit */}
-                    <div className="relative flex w-full flex-col justify-end p-12 md:w-1/2 min-h-[500px]">
+                    <div className="group relative flex w-full flex-col justify-end p-12 md:w-1/2 min-h-[500px] overflow-hidden border-t md:border-t-0 md:border-l border-border">
                         <img
                             src="/finding-fit.png"
                             alt="Finding your fit"
-                            className="absolute inset-0 h-full w-full object-cover"
+                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
-                        <div className="absolute inset-0 bg-black/40" />
-                        <h2 className="relative text-4xl font-bold text-white">Finding your fit</h2>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent group-hover:from-primary/60 transition-colors duration-500" />
+                        <h2 className="relative text-4xl font-black text-white tracking-tight">Finding your fit</h2>
                     </div>
                 </div>
 
                 {/* Why Choose Undercut Section */}
-                <div className="bg-secondary/20 py-24">
+                <div className="bg-muted/50 py-24">
                     <div className="mx-auto max-w-7xl px-8 text-center">
                         <h2 className="mb-16 text-3xl font-bold text-foreground">Why choose Undercut?</h2>
 
@@ -138,7 +148,7 @@ export default function Home() {
                 <SearchSection />
 
                 {/* Scrollable Brand List Section */}
-                <div className="bg-secondary/20 py-24">
+                <div className="bg-muted/30 py-24">
                     <div className="mx-auto max-w-2xl px-8 text-center">
                         <h2 className="mb-8 text-2xl font-bold text-foreground">Browse by Brand</h2>
 

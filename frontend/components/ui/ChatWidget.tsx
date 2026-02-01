@@ -74,8 +74,8 @@ export function ChatWidget() {
                         {/* Header */}
                         <div className="flex items-center justify-between bg-primary p-4 text-primary-foreground">
                             <div className="flex items-center gap-3">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
-                                    <Sparkles className="h-6 w-6 text-white" />
+                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-foreground/20 backdrop-blur-sm">
+                                    <Sparkles className="h-6 w-6 text-primary-foreground" />
                                 </div>
                                 <div>
                                     <h3 className="text-sm font-black uppercase tracking-tight">Undercut AI</h3>
@@ -84,7 +84,7 @@ export function ChatWidget() {
                             </div>
                             <button
                                 onClick={() => setIsOpen(false)}
-                                className="rounded-lg p-1 hover:bg-white/10 transition-colors"
+                                className="rounded-lg p-1 hover:bg-primary-foreground/10 transition-colors"
                             >
                                 <X className="h-5 w-5" />
                             </button>

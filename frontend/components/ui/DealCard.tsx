@@ -44,7 +44,7 @@ export function DealCard({
             onClick={onClick}
         >
             {/* Image Section */}
-            <div className="relative aspect-[16/10] overflow-hidden bg-zinc-100">
+            <div className="relative aspect-[16/10] overflow-hidden bg-muted">
                 {imageUrl ? (
                     <img
                         src={imageUrl}
@@ -52,7 +52,7 @@ export function DealCard({
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                 ) : (
-                    <div className="flex h-full w-full items-center justify-center text-zinc-400">
+                    <div className="flex h-full w-full items-center justify-center text-muted-foreground">
                         <Cpu className="h-12 w-12 opacity-20" />
                     </div>
                 )}

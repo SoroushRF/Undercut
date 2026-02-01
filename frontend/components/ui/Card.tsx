@@ -28,7 +28,7 @@ export const CardTitle = React.forwardRef<HTMLHeadingElement, React.HTMLAttribut
 
 export const CardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
     function CardDescription({ className, ...props }, ref) {
-        return <p ref={ref} className={cn("text-sm text-zinc-600", className)} {...props} />;
+        return <p ref={ref} className={cn("text-sm text-muted-foreground", className)} {...props} />;
     }
 );
 

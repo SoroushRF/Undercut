@@ -42,21 +42,21 @@ export function Slider({
                     onChange={handleChange}
                     className="absolute inset-0 h-full w-full opacity-0 cursor-pointer z-20"
                 />
-                <div className="relative h-2 w-full grow overflow-hidden rounded-full bg-zinc-100">
+                <div className="relative h-2 w-full grow overflow-hidden rounded-full bg-muted">
                     <div
-                        className="absolute h-full bg-zinc-900 transition-all"
+                        className="absolute h-full bg-primary transition-all"
                         style={{ width: `${percentage}%` }}
                     />
                 </div>
-                <div 
-                    className="absolute h-5 w-5 rounded-full border-2 border-zinc-900 bg-white ring-offset-2 transition-all hover:scale-110 z-10 pointer-events-none shadow-sm"
+                <div
+                    className="absolute h-6 w-6 rounded-full border-2 border-primary bg-card ring-offset-background transition-all hover:scale-110 z-10 pointer-events-none shadow-xl"
                     style={{ left: `${percentage}%`, transform: `translateX(-50%)` }}
                 />
             </div>
             {formatLabel && (
-                <div className="mt-2 flex justify-between text-xs text-zinc-500">
+                <div className="mt-4 flex justify-between text-xs text-muted-foreground font-medium uppercase tracking-wider">
                     <span>{formatLabel(min)}</span>
-                    <span className="font-medium text-zinc-900">{formatLabel(currentValue)}</span>
+                    <span className="font-black text-foreground bg-primary/10 px-2 py-0.5 rounded-md border border-primary/20">{formatLabel(currentValue)}</span>
                     <span>{formatLabel(max)}</span>
                 </div>
             )}
