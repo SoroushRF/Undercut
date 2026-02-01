@@ -10,20 +10,20 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const badgeVariants = {
-    primary: "bg-black text-white",
-    secondary: "bg-zinc-100 text-zinc-900",
-    outline: "border border-zinc-200 text-zinc-900",
-    destructive: "bg-red-100 text-red-600 border border-red-200",
-    success: "bg-emerald-100 text-emerald-700 border border-emerald-200",
-    warning: "bg-amber-100 text-amber-700 border border-amber-200",
+    primary: "bg-primary text-primary-foreground",
+    secondary: "bg-secondary text-secondary-foreground",
+    outline: "border border-border text-foreground",
+    destructive: "bg-destructive/10 text-destructive border border-destructive/20",
+    success: "bg-success/10 text-success border border-success/20",
+    warning: "bg-warning/10 text-warning border border-warning/20",
 };
 
 const gradeColors = {
-    S: "bg-purple-600 text-white shadow-[0_0_10px_rgba(147,51,234,0.3)]",
-    A: "bg-emerald-500 text-white",
+    S: "bg-primary text-primary-foreground shadow-[0_0_10px_rgba(147,51,234,0.3)]",
+    A: "bg-success text-success-foreground",
     B: "bg-blue-500 text-white",
-    C: "bg-amber-500 text-white",
-    F: "bg-red-500 text-white",
+    C: "bg-warning text-warning-foreground",
+    F: "bg-destructive text-destructive-foreground",
 };
 
 export function Badge({ className, variant = "secondary", grade, ...props }: BadgeProps) {
