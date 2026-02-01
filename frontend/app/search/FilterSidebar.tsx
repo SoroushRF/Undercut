@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { FilterChipsGroup } from "@/components/ui/FilterChips";
+import { gradeLabels } from "@/components/ui/Badge";
 
 interface FilterSidebarProps {
     className?: string;
@@ -15,7 +16,7 @@ export function FilterSidebar({ className }: FilterSidebarProps) {
 
     return (
         <div className={`space-y-8 ${className}`}>
-             {/* Price Range */}
+            {/* Price Range */}
             <div>
                 <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-zinc-900">Price Range</h3>
                 <div className="flex items-center gap-2">
@@ -39,13 +40,13 @@ export function FilterSidebar({ className }: FilterSidebarProps) {
 
             {/* Make */}
             <div>
-                 <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-zinc-900">Make</h3>
-                 <div className="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+                <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-zinc-900">Make</h3>
+                <div className="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
                     {["Tesla", "BMW", "Toyota", "Honda", "Mercedes-Benz", "Audi", "Ford", "Mazda"].map((make) => (
                         <label key={make} className="flex items-center gap-3 rounded-lg p-2 hover:bg-zinc-100 cursor-pointer transition">
-                            <input 
-                                type="radio" 
-                                name="make" 
+                            <input
+                                type="radio"
+                                name="make"
                                 className="h-4 w-4 rounded-full border-zinc-300 text-black focus:ring-black"
                                 checked={selectedMake === make}
                                 onChange={() => setSelectedMake(make)}
@@ -53,17 +54,17 @@ export function FilterSidebar({ className }: FilterSidebarProps) {
                             <span className="text-sm font-medium text-zinc-700">{make}</span>
                         </label>
                     ))}
-                 </div>
+                </div>
             </div>
 
-             {/* Deal Grade */}
-             <div>
+            {/* Deal Grade */}
+            <div>
                 <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-zinc-900">Deal Grade</h3>
                 <div className="space-y-2">
-                    {["S", "A", "B", "C", "F"].map((grade) => (
+                    {["S", "A", "B", "C", "D", "F"].map((grade) => (
                         <label key={grade} className="flex items-center gap-3 cursor-pointer">
                             <input type="checkbox" className="h-4 w-4 rounded border-zinc-300 text-black focus:ring-black" />
-                            <span className="text-sm font-medium text-zinc-700">Tier {grade}</span>
+                            <span className="text-sm font-medium text-zinc-700">{gradeLabels[grade]}</span>
                         </label>
                     ))}
                 </div>
@@ -72,13 +73,13 @@ export function FilterSidebar({ className }: FilterSidebarProps) {
             {/* Transmission */}
             <div>
                 <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-zinc-900">Transmission</h3>
-                <FilterChipsGroup 
-                    options={["Automatic", "Manual", "CVT"]} 
+                <FilterChipsGroup
+                    options={["Automatic", "Manual", "CVT"]}
                     value={selectedTransmission}
                     onChange={setSelectedTransmission}
                 />
             </div>
-            
+
             <button className="w-full rounded-xl bg-zinc-900 py-3 text-sm font-bold text-white shadow-md transition hover:bg-zinc-800 active:scale-95">
                 Apply Filters
             </button>

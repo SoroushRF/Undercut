@@ -20,7 +20,7 @@ export default function SearchPage() {
                         </aside>
 
                         {/* Mobile Filter Toggle (Visible only on mobile) */}
-                         <div className="lg:hidden">
+                        <div className="lg:hidden">
                             <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-white border border-zinc-200 p-4 font-bold text-zinc-900 shadow-sm">
                                 <SlidersHorizontal className="h-4 w-4" />
                                 Filters
@@ -47,7 +47,7 @@ export default function SearchPage() {
                                         model={car.model}
                                         year={car.year}
                                         price={car.price}
-                                        grade={car.deal_grade as "S" | "A" | "B" | "C" | "F"}
+                                        grade={car.deal_grade as "S" | "A" | "B" | "C" | "D" | "F"}
                                         imageUrl={car.image_url || undefined}
                                     />
                                 ))}

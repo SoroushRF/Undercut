@@ -3,7 +3,7 @@
 // frontend/components/ui/DealCard.tsx
 import * as React from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
+import { Badge, gradeLabels } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
 import { MapPin, Gauge, Cpu } from "lucide-react";
 
@@ -60,7 +60,7 @@ export function DealCard({
                 {/* Grade Badge Overlay */}
                 <div className="absolute left-4 top-4">
                     <Badge grade={grade} className="px-3 py-1 text-sm shadow-lg">
-                        Tier {grade}
+                        {gradeLabels[grade]}
                     </Badge>
                 </div>
 

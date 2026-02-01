@@ -1,7 +1,7 @@
 import { MOCK_CARS } from "@/lib/mock-data";
 import { notFound } from "next/navigation";
 import { Navbar } from "@/components/ui/Navbar";
-import { Badge } from "@/components/ui/Badge";
+import { Badge, gradeLabels } from "@/components/ui/Badge";
 import { SoldBadge } from "@/components/motion/SoldBadge";
 import { FreshnessBadge } from "@/components/motion/FreshnessBadge";
 import { Gauge, MapPin, Trophy, Calendar, Cog, Fuel, RotateCw, DollarSign } from "lucide-react";
@@ -100,7 +100,7 @@ export default function CarDetailPage({ params }: PageProps) {
                                 <div className="flex flex-col items-end">
                                     <p className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-2">Deal Grade</p>
                                     <Badge grade={car.deal_grade as "S" | "A" | "B" | "C" | "D" | "F"} className="text-lg px-4 py-1.5 shadow-sm">
-                                        Tier {car.deal_grade}
+                                        {gradeLabels[car.deal_grade || "C"]}
                                     </Badge>
                                 </div>
                             </div>

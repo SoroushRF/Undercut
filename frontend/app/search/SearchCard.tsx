@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Badge } from "@/components/ui/Badge";
+import { Badge, gradeLabels } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
 
 interface SearchCardProps {
@@ -11,7 +11,7 @@ interface SearchCardProps {
     model: string;
     year: number;
     price: number;
-    grade: "S" | "A" | "B" | "C" | "F";
+    grade: "S" | "A" | "B" | "C" | "D" | "F";
     imageUrl?: string;
     className?: string; // Allow minimal styling injection if needed, but rely on internal styles primarily
 }
@@ -53,11 +53,11 @@ export function SearchCard({
                 <div className="flex flex-1 flex-col justify-between p-4 sm:p-6">
                     <div>
                         <div className="flex items-start justify-between gap-2">
-                             <h3 className="text-lg font-bold text-zinc-900 line-clamp-1 sm:text-xl">
+                            <h3 className="text-lg font-bold text-zinc-900 line-clamp-1 sm:text-xl">
                                 {year} {make} {model}
                             </h3>
                             <Badge grade={grade} className="shrink-0 shadow-sm">
-                                {grade}
+                                {gradeLabels[grade]}
                             </Badge>
                         </div>
                     </div>
