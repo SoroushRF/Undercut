@@ -54,7 +54,6 @@ export function Navbar({ className }: { className?: string }) {
                         className="relative rounded-xl p-2.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
                     >
                         <Bell className="h-5 w-5" />
-                        <span className="absolute right-2.5 top-2.5 flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" />
                     </button>
 
                     <div className="h-8 w-[1px] bg-border mx-2" />
@@ -71,25 +70,25 @@ export function Navbar({ className }: { className?: string }) {
                         <DropdownMenuContent align="end" className="w-56">
                             <DropdownMenuLabel>My Account</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            
+
                             <DropdownMenuItem asChild>
                                 <Link href="/profile" className="gap-2 cursor-pointer flex items-center w-full">
                                     <User className="h-4 w-4" /> Profile
                                 </Link>
                             </DropdownMenuItem>
-                            
+
                             <DropdownMenuItem asChild>
                                 <Link href="/watchlist" className="gap-2 cursor-pointer flex items-center w-full">
                                     <Heart className="h-4 w-4" /> Watchlist
                                 </Link>
                             </DropdownMenuItem>
-                            
+
                             <DropdownMenuItem asChild>
                                 <Link href="/membership" className="gap-2 cursor-pointer flex items-center w-full">
                                     <ShieldCheck className="h-4 w-4" /> Membership
                                 </Link>
                             </DropdownMenuItem>
-                            
+
                             <DropdownMenuItem asChild>
                                 <Link href="/settings" className="gap-2 cursor-pointer flex items-center w-full">
                                     <Settings className="h-4 w-4" /> Settings
