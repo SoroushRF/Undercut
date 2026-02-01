@@ -53,19 +53,11 @@ export function SearchCard({
                 <div className="flex flex-1 flex-col justify-between p-4 sm:p-6">
                     <div>
                         <div className="flex items-start justify-between gap-2">
-<<<<<<< HEAD
-                            <h3 className="text-lg font-bold text-zinc-900 line-clamp-1 sm:text-xl">
-                                {year} {make} {model}
-                            </h3>
-                            <Badge grade={grade} className="shrink-0 shadow-sm">
-                                {gradeLabels[grade]}
-=======
                             <h3 className="text-lg font-bold text-foreground line-clamp-1 sm:text-xl">
                                 {year} {make} {model}
                             </h3>
                             <Badge grade={grade} className="shrink-0 shadow-sm border-transparent">
                                 Tier {grade}
->>>>>>> cb6b77b (feat: unified dark mode and dynamic 'mood' design across Homepage, Search, and Profile pages)
                             </Badge>
                         </div>
                     </div>
