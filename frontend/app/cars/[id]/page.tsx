@@ -43,8 +43,8 @@ export default function CarDetailPage({ params }: PageProps) {
                         <div className="space-y-4">
                             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-zinc-100 shadow-md">
                                 {car.image_url ? (
-                                    <img 
-                                        src={car.image_url} 
+                                    <img
+                                        src={car.image_url}
                                         alt={`${car.year} ${car.make} ${car.model}`}
                                         className="h-full w-full object-cover"
                                     />
@@ -56,7 +56,7 @@ export default function CarDetailPage({ params }: PageProps) {
                                         </div>
                                     </div>
                                 )}
-                                
+
                                 {/* Overlay Badges */}
                                 {showSoldBadge && <SoldBadge />}
                                 {showFreshnessBadge && (
@@ -65,12 +65,12 @@ export default function CarDetailPage({ params }: PageProps) {
                                     </div>
                                 )}
                             </div>
-                            
+
                             {/* Thumbnail strip (Visual only for now since mock data only has 1 image) */}
                             <div className="grid grid-cols-4 gap-4">
                                 {[1, 2, 3, 4].map((i) => (
                                     <div key={i} className="aspect-[4/3] rounded-xl bg-zinc-200 overflow-hidden cursor-pointer hover:opacity-80 transition active:scale-95">
-                                         {car.image_url && <img src={car.image_url} className="h-full w-full object-cover opacity-50 hover:opacity-100 transition" />}
+                                        {car.image_url && <img src={car.image_url} className="h-full w-full object-cover opacity-50 hover:opacity-100 transition" />}
                                     </div>
                                 ))}
                             </div>
@@ -99,7 +99,7 @@ export default function CarDetailPage({ params }: PageProps) {
                                 </div>
                                 <div className="flex flex-col items-end">
                                     <p className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-2">Deal Grade</p>
-                                    <Badge grade={car.deal_grade as any} className="text-lg px-4 py-1.5 shadow-sm">
+                                    <Badge grade={car.deal_grade as "S" | "A" | "B" | "C" | "D" | "F"} className="text-lg px-4 py-1.5 shadow-sm">
                                         Tier {car.deal_grade}
                                     </Badge>
                                 </div>
@@ -157,7 +157,7 @@ export default function CarDetailPage({ params }: PageProps) {
                                             <p className="text-zinc-900 font-semibold">{car.postal_code || "Unknown"}</p>
                                         </div>
                                     </div>
-                                     <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-3">
                                         <div className="h-10 w-10 bg-zinc-50 rounded-full flex items-center justify-center text-zinc-500">
                                             <Calendar className="h-5 w-5" />
                                         </div>
@@ -177,8 +177,8 @@ export default function CarDetailPage({ params }: PageProps) {
                                 </p>
                             </div>
 
-                             {/* AI Verdict */}
-                             {car.ai_verdict && (
+                            {/* AI Verdict */}
+                            {car.ai_verdict && (
                                 <div className="mb-8 rounded-xl bg-indigo-50 p-4 border border-indigo-100">
                                     <h3 className="font-bold text-indigo-900 mb-1 flex items-center gap-2">
                                         <Trophy className="h-4 w-4" />
@@ -188,7 +188,7 @@ export default function CarDetailPage({ params }: PageProps) {
                                         {car.ai_verdict}
                                     </p>
                                 </div>
-                             )}
+                            )}
 
                             {/* Action Buttons */}
                             <div className="mt-auto flex flex-col gap-3 sm:flex-row">

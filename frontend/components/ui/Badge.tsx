@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
     variant?: "primary" | "secondary" | "outline" | "destructive" | "success" | "warning";
-    grade?: "S" | "A" | "B" | "C" | "F";
+    grade?: "S" | "A" | "B" | "C" | "D" | "F";
 }
 
 const badgeVariants = {
@@ -23,6 +23,7 @@ const gradeColors = {
     A: "bg-success text-success-foreground",
     B: "bg-blue-500 text-white",
     C: "bg-warning text-warning-foreground",
+    D: "bg-orange-600 text-white",
     F: "bg-destructive text-destructive-foreground",
 };
 

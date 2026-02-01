@@ -16,7 +16,7 @@ export interface DealCardProps {
     price: number;
     mileage: number;
     location: string;
-    grade: "S" | "A" | "B" | "C" | "F";
+    grade: "S" | "A" | "B" | "C" | "D" | "F";
     imageUrl?: string;
     className?: string;
     onClick?: () => void;
