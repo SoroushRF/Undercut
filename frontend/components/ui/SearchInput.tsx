@@ -14,14 +14,14 @@ export function SearchInput({ className, onClear, value, onChange, ...props }: S
 
     return (
         <div className={cn("relative flex w-full items-center", className)}>
-            <Search className="absolute left-4 h-5 w-5 text-zinc-400" />
+            <Search className="absolute left-4 h-5 w-5 text-muted-foreground" />
 
             <input
                 ref={inputRef}
                 value={value}
                 onChange={onChange}
                 className={cn(
-                    "h-12 w-full rounded-2xl border border-zinc-200 bg-white pl-12 pr-12 text-sm font-medium transition-all focus:border-zinc-400 focus:outline-none focus:ring-4 focus:ring-zinc-100 placeholder:text-zinc-400",
+                    "h-12 w-full rounded-2xl border border-border bg-background pl-12 pr-12 text-sm font-medium transition-all focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 placeholder:text-muted-foreground",
                 )}
                 {...props}
             />
@@ -33,7 +33,7 @@ export function SearchInput({ className, onClear, value, onChange, ...props }: S
                         onClear();
                         inputRef.current?.focus();
                     }}
-                    className="absolute right-4 rounded-full p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 transition-colors"
+                    className="absolute right-4 rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                 >
                     <X className="h-4 w-4" />
                 </button>

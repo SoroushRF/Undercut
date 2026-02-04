@@ -15,6 +15,8 @@ type CarListing struct {
 	MileageUnit  string    `json:"mileage_unit"`
 	Transmission string    `json:"transmission"`
 	Drivetrain   string    `json:"drivetrain"`
+	FuelEconomy  string    `json:"fuel_economy"`
+	BodyType     string    `json:"body_type"`
 	SourceURL    string    `json:"source_url"`
 	ScrapedAt    time.Time `json:"scraped_at"`
 }

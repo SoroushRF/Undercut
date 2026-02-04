@@ -44,13 +44,13 @@ export function LockedPreview({
                            We could put a skeleton here instead of real children 
                            to be 100% secure about not leaking data.
                         */}
-                        <div className="h-64 w-full bg-zinc-100" />
+                        <div className="h-64 w-full bg-muted" />
                     </div>
 
-                    <div className="absolute inset-0 flex items-center justify-center p-6 bg-white/40 backdrop-blur-sm">
-                        <div className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 shadow-xl">
-                            <div className="text-lg font-bold text-zinc-900">{title}</div>
-                            <p className="mt-2 text-sm text-zinc-600 leading-relaxed">
+                    <div className="absolute inset-0 flex items-center justify-center p-6 bg-background/40 backdrop-blur-sm">
+                        <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-xl">
+                            <div className="text-lg font-bold text-foreground">{title}</div>
+                            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
                                 {message}
                             </p>
                             <div className="mt-6">

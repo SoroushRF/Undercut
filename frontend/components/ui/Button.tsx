@@ -26,15 +26,15 @@ const base =
 
 const variants: Record<ButtonVariant, string> = {
     primary:
-        "bg-black text-white hover:opacity-90 focus-visible:ring-black",
+        "bg-primary text-primary-foreground hover:opacity-90 focus-visible:ring-primary",
     secondary:
-        "bg-zinc-100 text-zinc-900 hover:bg-zinc-200 focus-visible:ring-zinc-400",
+        "bg-muted text-foreground hover:bg-muted/80 focus-visible:ring-border",
     ghost:
-        "bg-transparent text-zinc-900 hover:bg-zinc-100 focus-visible:ring-zinc-400",
+        "bg-transparent text-foreground hover:bg-muted focus-visible:ring-border",
     destructive:
-        "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-600",
+        "bg-destructive text-destructive-foreground hover:opacity-90 focus-visible:ring-destructive",
     outline:
-        "border border-zinc-200 bg-white text-zinc-900 hover:bg-zinc-50 focus-visible:ring-zinc-400",
+        "border border-border bg-transparent text-foreground hover:bg-muted focus-visible:ring-border",
 };
 
 const sizes: Record<ButtonSize, string> = {

@@ -23,6 +23,7 @@
 
 import { useMemo } from 'react';
 import { DealGrade } from '@/lib/types';
+import { gradeLabels } from '@/components/ui/Badge';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -39,9 +40,9 @@ interface DealGradeGaugeProps {
 
 const GRADE_CONFIG = {
   S: {
-    color: '#10b981', // Emerald green
-    bgColor: 'bg-emerald-500',
-    textColor: 'text-emerald-600',
+    color: '#facc15', // Yellow-400 (Gold)
+    bgColor: 'bg-yellow-400',
+    textColor: 'text-yellow-600',
     label: 'Steal',
     description: '10%+ below FMV',
     rotationDegrees: 0, // Leftmost position
@@ -167,22 +168,7 @@ export const DealGradeGauge = ({ dealGrade, showLabel = true }: DealGradeGaugePr
             <circle cx="100" cy="100" r="5" fill={config.color} />
           </g>
 
-          {/* Tick marks and labels for reference */}
-          <text x="20" y="115" fontSize="10" fill="#666" textAnchor="middle" fontWeight="bold">
-            S
-          </text>
-          <text x="50" y="115" fontSize="10" fill="#666" textAnchor="middle">
-            A
-          </text>
-          <text x="100" y="115" fontSize="10" fill="#666" textAnchor="middle">
-            B
-          </text>
-          <text x="150" y="115" fontSize="10" fill="#666" textAnchor="middle">
-            C
-          </text>
-          <text x="180" y="115" fontSize="10" fill="#666" textAnchor="middle" fontWeight="bold">
-            F
-          </text>
+          {/* Ticks Removed as per UX request (No random letters) */}
         </svg>
       </div>
 
@@ -193,7 +179,7 @@ export const DealGradeGauge = ({ dealGrade, showLabel = true }: DealGradeGaugePr
       {showLabel && (
         <div className="text-center">
           <div className={`text-3xl font-bold ${config.textColor}`}>
-            {dealGrade || 'N/A'}
+            {gradeLabels[dealGrade || 'C']}
           </div>
           <div className="text-sm text-gray-600 mt-1">
             {config.label}: {config.description}
