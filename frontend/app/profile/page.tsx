@@ -6,7 +6,7 @@ import { Navbar } from "@/components/ui/Navbar";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Slider } from "./Slider";
-import { ChevronRight, ChevronLeft, Check } from "lucide-react";
+import { ChevronRight, ChevronLeft, Check, User, Car, ShieldCheck, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageTransition } from "@/components/motion/PageTransition";
 
@@ -102,20 +102,54 @@ export default function ProfilePage() {
 
                 <main className="relative mx-auto flex max-w-5xl flex-col items-center justify-center px-4 py-12 lg:min-h-[calc(100vh-80px)]">
 
-                    {/* Progress Bar */}
-                    <div className="mb-12 w-full max-w-md">
-                        <div className="flex justify-between text-[10px] font-black uppercase tracking-[2px] text-muted-foreground mb-3 px-1">
-                            <span>Profile</span>
-                            <span>Preferences</span>
-                            <span>Financials</span>
-                        </div>
-                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted/30 border border-border/20">
+                    {/* Progress Steps */}
+                    <div className="mb-12 w-full max-w-lg">
+                        <div className="relative flex justify-between">
+                            {/* Background Line */}
+                            <div className="absolute top-[22px] left-0 w-full h-[2px] bg-muted/50 -z-0 rounded-full" />
+
+                            {/* Filling Line */}
                             <motion.div
-                                className="h-full bg-primary shadow-[0_0_15px_rgba(var(--primary),0.5)]"
+                                className="absolute top-[22px] left-0 h-[2px] bg-primary -z-0 rounded-full"
                                 initial={{ width: "0%" }}
-                                animate={{ width: `${((step + 1) / 4) * 100}%` }}
+                                animate={{ width: `${(step / 3) * 100}%` }}
                                 transition={{ duration: 0.5, ease: "circOut" }}
                             />
+
+                            {/* Steps */}
+                            {[
+                                { label: "Profile", icon: User },
+                                { label: "Style", icon: Car },
+                                { label: "Brands", icon: ShieldCheck },
+                                { label: "Budget", icon: Wallet }
+                            ].map((item, index) => {
+                                const isActive = index === step;
+                                const isCompleted = index < step;
+                                const Icon = item.icon;
+                                return (
+                                    <button
+                                        key={item.label}
+                                        onClick={() => setStep(index)}
+                                        className="flex flex-col items-center z-10 gap-2 group"
+                                    >
+                                        <div
+                                            className={cn(
+                                                "w-12 h-12 rounded-2xl flex items-center justify-center border-2 transition-all duration-300 shadow-sm group-hover:scale-105",
+                                                isActive ? "bg-primary border-primary text-primary-foreground scale-110 shadow-primary/30" :
+                                                    isCompleted ? "bg-card border-primary text-primary" : "bg-card border-border text-muted-foreground"
+                                            )}
+                                        >
+                                            <Icon className="w-5 h-5" strokeWidth={3} />
+                                        </div>
+                                        <span className={cn(
+                                            "text-[10px] font-black uppercase tracking-widest transition-colors duration-300",
+                                            isActive ? "text-foreground" : isCompleted ? "text-foreground/80" : "text-muted-foreground"
+                                        )}>
+                                            {item.label}
+                                        </span>
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 
