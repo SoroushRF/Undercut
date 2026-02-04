@@ -213,21 +213,40 @@ export default function ProfilePage() {
                                                         />
                                                     </div>
                                                     <div className="col-span-1 space-y-2.5">
-                                                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">State</label>
-                                                        <Input
-                                                            className="h-12 rounded-xl bg-muted/30 border-border/50 focus:bg-background transition-all"
-                                                            value={formData.state}
-                                                            onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                                                            placeholder="CA"
-                                                        />
+                                                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Province</label>
+                                                        <div className="relative">
+                                                            <select
+                                                                className="h-12 w-full appearance-none rounded-xl bg-muted/30 border-border/50 pl-3 pr-6 text-xs sm:text-sm font-medium focus:bg-background transition-all outline-none focus:ring-2 focus:ring-primary/20"
+                                                                value={formData.state}
+                                                                onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                                                            >
+                                                                <option value="" disabled>Select Province</option>
+                                                                <option value="ON">Ontario</option>
+                                                                <option value="QC">Quebec</option>
+                                                                <option value="BC">British Columbia</option>
+                                                                <option value="AB">Alberta</option>
+                                                                <option value="MB">Manitoba</option>
+                                                                <option value="SK">Saskatchewan</option>
+                                                                <option value="NS">Nova Scotia</option>
+                                                                <option value="NB">New Brunswick</option>
+                                                                <option value="NL">Newfoundland and Labrador</option>
+                                                                <option value="PE">Prince Edward Island</option>
+                                                                <option value="NT">Northwest Territories</option>
+                                                                <option value="NU">Nunavut</option>
+                                                                <option value="YT">Yukon</option>
+                                                            </select>
+                                                            <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-muted-foreground">
+                                                                <ChevronRight className="h-3 w-3 rotate-90" />
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                     <div className="col-span-2 space-y-2.5">
-                                                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Zip</label>
+                                                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Postal Code</label>
                                                         <Input
                                                             className="h-12 rounded-xl bg-muted/30 border-border/50 focus:bg-background transition-all"
                                                             value={formData.zip}
                                                             onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
-                                                            placeholder="90210"
+                                                            placeholder="M5V 2H1"
                                                         />
                                                     </div>
                                                 </div>
@@ -357,10 +376,10 @@ export default function ProfilePage() {
 
                                     <Button
                                         onClick={() => step === 3 ? (window.location.href = '/') : paginate(1)}
-                                        className="min-w-[160px] rounded-xl font-black uppercase tracking-widest shadow-xl shadow-primary/20"
+                                        className="min-w-[160px] rounded-xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 flex items-center justify-center gap-2"
                                     >
-                                        {step === 3 ? "Complete Profile" : "Continue"}
-                                        {step !== 3 && <ChevronRight className="ml-2 h-4 w-4" />}
+                                        <span>{step === 3 ? "Complete Profile" : "Continue"}</span>
+                                        {step !== 3 && <ChevronRight className="h-4 w-4" />}
                                     </Button>
                                 </div>
 
