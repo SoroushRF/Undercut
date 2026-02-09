@@ -12,6 +12,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { toast } from "sonner";
 import { PageTransition } from "@/components/motion/PageTransition";
+import { motion } from "framer-motion";
 
 export default function Home() {
     return (
@@ -34,34 +35,54 @@ export default function Home() {
                         {/* Left Column: Text + Buttons */}
                         <div className="space-y-8">
                             <div className="space-y-4">
-                                <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl">
+                                <motion.h1
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.5, ease: "easeOut" }}
+                                    className="text-4xl font-bold tracking-tight text-primary sm:text-5xl"
+                                >
                                     Drive the car you deserve for less.
-                                </h1>
-                                <p className="text-lg text-muted-foreground">
+                                </motion.h1>
+                                <motion.p
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
+                                    className="text-lg text-muted-foreground"
+                                >
                                     Undercut finds the best underpriced cars in the market so you never overpay again.
-                                </p>
+                                </motion.p>
                             </div>
 
-                            <div className="flex flex-col gap-4 sm:flex-row">
-                                <button className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+                                className="flex flex-col gap-4 sm:flex-row"
+                            >
+                                <button className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90 hover:scale-105 active:scale-95 duration-200">
                                     Sign Up
                                 </button>
-                                <button className="rounded-lg border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground transition hover:bg-secondary/50">
+                                <button className="rounded-lg border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground transition hover:bg-secondary/50 hover:scale-105 active:scale-95 duration-200">
                                     Log In
                                 </button>
-                            </div>
+                            </motion.div>
                         </div>
 
                         {/* Right Column: Hero Image */}
                         <div className="relative group">
                             <div className="absolute -inset-4 rounded-[2.5rem] bg-primary/20 blur-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                            <div className="relative overflow-hidden rounded-2xl shadow-xl border border-border bg-card">
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                transition={{ duration: 0.7, delay: 0.2 }}
+                                className="relative overflow-hidden rounded-2xl shadow-xl border border-border bg-card"
+                            >
                                 <img
                                     src="/hero.png"
                                     alt="Undercut Car Marketplace"
-                                    className="h-full w-full object-cover"
+                                    className="h-full w-full object-cover transform transition-transform hover:scale-105 duration-700"
                                 />
-                            </div>
+                            </motion.div>
                         </div>
                     </div>
                 </div>
@@ -113,24 +134,36 @@ export default function Home() {
                         <h2 className="mb-16 text-3xl font-bold text-foreground">Why choose Undercut?</h2>
 
                         <div className="mb-12 grid grid-cols-1 gap-12 md:grid-cols-2">
-                            <div className="flex flex-col items-center">
-                                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-card shadow-sm border border-border">
+                            <motion.div
+                                initial={{ opacity: 0, x: -50 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.6 }}
+                                className="flex flex-col items-center"
+                            >
+                                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-card shadow-sm border border-border transform transition hover:rotate-12 duration-300">
                                     <Wallet className="h-8 w-8 text-primary" />
                                 </div>
                                 <h3 className="mb-4 text-xl font-bold text-foreground">Best Market Prices</h3>
                                 <p className="max-w-sm text-center text-muted-foreground">
                                     Our AI scans thousands of listings to find deals that are significantly underpriced, saving you money instantly.
                                 </p>
-                            </div>
-                            <div className="flex flex-col items-center">
-                                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-card shadow-sm border border-border">
+                            </motion.div>
+                            <motion.div
+                                initial={{ opacity: 0, x: 50 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.6, delay: 0.2 }}
+                                className="flex flex-col items-center"
+                            >
+                                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-card shadow-sm border border-border transform transition hover:rotate-12 duration-300">
                                     <ShieldCheck className="h-8 w-8 text-primary" />
                                 </div>
                                 <h3 className="mb-4 text-xl font-bold text-foreground">Verified Quality</h3>
                                 <p className="max-w-sm text-center text-muted-foreground">
                                     Every car is pre-vetted for quality and reliability, so you can drive away with complete peace of mind.
                                 </p>
-                            </div>
+                            </motion.div>
                         </div>
 
                         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
