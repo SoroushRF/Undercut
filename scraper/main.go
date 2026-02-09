@@ -5,7 +5,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/SoroushRF/Undercut/scraper/internal/collector"
+	"github.com/SoroushRF/Undercut/scraper/collectors"
 	"github.com/SoroushRF/Undercut/scraper/models"
 )
 
@@ -16,7 +16,7 @@ func main() {
 	fmt.Println(strings.Repeat("=", 60))
 
 	// 1. Initialize Collector
-	c, err := collector.NewAutoTraderCollector()
+	c, err := collectors.NewAutoTraderCollector()
 	if err != nil {
 		log.Fatalf("❌ Initialization failed: %v", err)
 	}
