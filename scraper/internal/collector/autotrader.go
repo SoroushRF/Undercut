@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/SoroushRF/Undercut/scraper/internal/model"
+	"github.com/SoroushRF/Undercut/scraper/models"
 	"github.com/playwright-community/playwright-go"
 )
 
@@ -23,7 +23,6 @@ func NewAutoTraderCollector() (*AutoTraderCollector, error) {
 		return nil, fmt.Errorf("could not start playwright: %v", err)
 	}
 
-	// Headless is TRUE for Docker compatibility
 	browser, err := pw.Chromium.Launch(playwright.BrowserTypeLaunchOptions{
 		Headless: playwright.Bool(true),
 		Args: []string{
@@ -51,7 +50,7 @@ func (c *AutoTraderCollector) Close() {
 	}
 }
 
-func (c *AutoTraderCollector) Scrape(make, modelName string, results chan<- model.CarListing) {
+func (c *AutoTraderCollector) Scrape(make, modelName string, results chan<- models.CarListing) {
 	defer close(results)
 
 	context, err := c.browser.NewContext(playwright.BrowserNewContextOptions{
@@ -73,113 +72,103 @@ func (c *AutoTraderCollector) Scrape(make, modelName string, results chan<- mode
 		return
 	}
 
-	// 🕵️ ULTRA STEALTH: Mask the browser to bypass anti-bot
+	// stealth setup
 	_ = page.AddInitScript(playwright.Script{
 		Content: playwright.String(`
 			Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
 			Object.defineProperty(navigator, 'languages', {get: () => ['en-US', 'en']});
 			Object.defineProperty(navigator, 'plugins', {get: () => [1, 2, 3, 4, 5]});
 			window.chrome = { runtime: {} };
-			// Add more properties to look real
-			Object.defineProperty(navigator, 'hardwareConcurrency', {get: () => 8});
-			Object.defineProperty(navigator, 'deviceMemory', {get: () => 8});
 		`),
 	})
 
-	// 1. Warm up session
-	fmt.Println("⏳ Warming up session (Home Page)...")
+	fmt.Println("⏳ Warming up session...")
 	if _, err := page.Goto("https://www.autotrader.ca", playwright.PageGotoOptions{
 		WaitUntil: playwright.WaitUntilStateCommit,
-		Timeout:   playwright.Float(45000), // Increase timeout for heavy page
+		Timeout:   playwright.Float(45000),
 	}); err != nil {
-		log.Printf("❌ Home page load failed: %v", err)
+		log.Printf("❌ Warmup failed: %v", err)
 	}
-	time.Sleep(5 * time.Second)
+	time.Sleep(3 * time.Second)
 
-	targetURL := fmt.Sprintf("https://www.autotrader.ca/cars/?loc=Toronto&make=%s&model=%s", make, modelName)
-	fmt.Printf("🎯 Targeting: %s %s in Toronto...\n", make, modelName)
+	pathMake := strings.ToLower(strings.ReplaceAll(make, " ", "-"))
+	pathModel := strings.ToLower(strings.ReplaceAll(modelName, " ", "-"))
+	targetURL := fmt.Sprintf("https://www.autotrader.ca/cars/%s/%s/on/toronto/", pathMake, pathModel)
 
-	// 2. Navigate to results
+	fmt.Printf("🎯 Targeting: %s %s in Toronto (%s)...\n", make, modelName, targetURL)
 	if _, err := page.Goto(targetURL, playwright.PageGotoOptions{
-		WaitUntil: playwright.WaitUntilStateCommit,
+		WaitUntil: playwright.WaitUntilStateDomcontentloaded,
+		Timeout:   playwright.Float(60000),
 	}); err != nil {
 		log.Printf("❌ Navigation failed: %v", err)
 		return
 	}
 
-	// 3. Handle Cookie Banner if it exists
-	fmt.Println("⏳ Checking for cookie banner...")
-	acceptBtn := "button:has-text('Accept'), button:has-text('Agree'), #onetrust-accept-btn-handler"
-	if err := page.Click(acceptBtn, playwright.PageClickOptions{
-		Timeout: playwright.Float(5000),
-	}); err == nil {
-		fmt.Println("✅ Cookie banner accepted.")
-	}
+	cookieBtn := "#onetrust-accept-btn-handler, button:has-text('Accept')"
+	_ = page.Click(cookieBtn, playwright.PageClickOptions{Timeout: playwright.Float(3000)})
 
-	// 4. Scroll to trigger lazy loading and look human
-	fmt.Println("⏳ Scrolling for results...")
+	// Skip "What's new" popup if it appears
+	skipBtn := "button:has-text('Skip intro'), .popup-close, [aria-label='Close']"
+	_ = page.Click(skipBtn, playwright.PageClickOptions{Timeout: playwright.Float(3000)})
+
 	for i := 0; i < 3; i++ {
 		_, _ = page.Evaluate(`window.scrollBy(0, 500)`)
 		time.Sleep(1 * time.Second)
 	}
 
-	// 5. Wait for results
-	fmt.Println("⏳ Waiting for car listings...")
-	_, err = page.WaitForSelector(".result-item, .listing-details", playwright.PageWaitForSelectorOptions{
-		Timeout: playwright.Float(20000),
+	_, err = page.WaitForSelector(".result-item", playwright.PageWaitForSelectorOptions{
+		Timeout: playwright.Float(30000),
 	})
 	if err != nil {
-		title, _ := page.Title()
-		html, _ := page.Content()
-		log.Printf("❌ Results did not appear. Title: %s", title)
-
-		if strings.Contains(strings.ToLower(html), "incapsula") || strings.Contains(strings.ToLower(html), "distil") {
-			log.Printf("⚠️ BOT DETECTION TRIGGERED: Page content contains anti-bot markers.")
-		}
-
-		_, _ = page.Screenshot(playwright.PageScreenshotOptions{
-			Path: playwright.String("debug.png"),
-		})
+		log.Printf("❌ Results did not appear.")
 		return
 	}
 
-	// Extract data
 	elements, _ := page.QuerySelectorAll(".result-item")
-	fmt.Printf("📊 Found %d potential cars. Extracting details...\n", len(elements))
-
 	for _, el := range elements {
-		text, _ := el.InnerText()
-		text = strings.ToLower(text)
-
-		titleEl, _ := el.QuerySelector(".result-title")
+		// Better title extraction
+		titleEl, _ := el.QuerySelector(".result-title, h2, h3, .listing-title")
 		var title string
 		if titleEl != nil {
 			title, _ = titleEl.InnerText()
 		}
 
-		linkEl, _ := el.QuerySelector("a.result-title-link")
-		var url string
-		if linkEl != nil {
-			urlRaw, _ := linkEl.GetAttribute("href")
-			if urlRaw != "" {
-				url = "https://www.autotrader.ca" + urlRaw
-			}
-		}
-
-		if title == "" {
+		if title == "" || !strings.Contains(strings.ToLower(title), strings.ToLower(modelName)) {
 			continue
 		}
 
-		car := model.CarListing{
+		// Collect more descriptive text for extraction
+		text, _ := el.InnerText()
+		specEl, _ := el.QuerySelector(".listing-specs, .item-proxies, .specs")
+		specText := ""
+		if specEl != nil {
+			specText, _ = specEl.InnerText()
+		}
+
+		combinedText := strings.ToLower(text + " " + title + " " + specText)
+
+		var url string
+		linkEl, _ := el.QuerySelector("a.result-title-link, a[href*='/a/']")
+		if linkEl != nil {
+			href, _ := linkEl.GetAttribute("href")
+			if href != "" {
+				if strings.HasPrefix(href, "http") {
+					url = href
+				} else {
+					url = "https://www.autotrader.ca" + href
+				}
+			}
+		}
+
+		car := models.CarListing{
 			Title:     strings.TrimSpace(title),
 			SourceURL: url,
-			ScrapedAt: time.Now(),
 			Make:      make,
 			Model:     modelName,
 			Currency:  "CAD",
 		}
 
-		// Better Price Detection
+		// extraction
 		priceEl, _ := el.QuerySelector(".price-amount, .listing-price, .hero-price")
 		var priceStr string
 		if priceEl != nil {
@@ -189,7 +178,6 @@ func (c *AutoTraderCollector) Scrape(make, modelName string, results chan<- mode
 		}
 		car.Price = extractPrice(priceStr)
 
-		// Better Mileage Detection
 		mileageEl, _ := el.QuerySelector(".odometer, .kms, .listing-kms")
 		var mileageStr string
 		if mileageEl != nil {
@@ -198,29 +186,30 @@ func (c *AutoTraderCollector) Scrape(make, modelName string, results chan<- mode
 			mileageStr = text
 		}
 		car.Mileage = extractMileage(mileageStr)
+		car.MileageUnit = "km"
 
 		car.Year = extractYear(title)
 
-		// Simple filtering
+		// Advanced extraction
+		car.Transmission = extractTransmission(combinedText)
+		car.Drivetrain = extractDrivetrain(combinedText)
+
+		car.BodyType = extractBodyType(combinedText)
+
 		if car.Price > 500 && car.Year > 0 {
 			results <- car
 		}
 	}
 }
 
-// Internal Helper Functions
 func extractPrice(raw string) float64 {
-	// Find all price-like patterns
 	re := regexp.MustCompile(`\$([0-9,]+)`)
 	matches := re.FindAllStringSubmatch(raw, -1)
-
 	maxPrice := 0.0
 	for _, m := range matches {
 		if len(m) > 1 {
 			clean := strings.ReplaceAll(m[1], ",", "")
 			val, _ := strconv.ParseFloat(clean, 64)
-			// We want the total price, which is almost always the largest value found
-			// (Avoiding weekly payments like $150)
 			if val > maxPrice {
 				maxPrice = val
 			}
@@ -231,28 +220,18 @@ func extractPrice(raw string) float64 {
 
 func extractMileage(raw string) int {
 	raw = strings.ToLower(raw)
-	// Remove "km away" to avoid matching distance instead of mileage
 	raw = regexp.MustCompile(`[0-9,.]+\s*km\s*away`).ReplaceAllString(raw, "")
-
-	// Robust mileage regex: captures numbers, commas, and decimals followed by a unit
 	re := regexp.MustCompile(`([0-9,.]+)\s*(km|kilometers|k)\b`)
 	matches := re.FindAllStringSubmatch(raw, -1)
-
 	maxMileage := 0
 	for _, match := range matches {
 		valStr := strings.ReplaceAll(match[1], ",", "")
 		unit := match[2]
-
-		val, err := strconv.ParseFloat(valStr, 64)
-		if err != nil {
-			continue
-		}
-
+		val, _ := strconv.ParseFloat(valStr, 64)
 		mileage := int(val)
 		if unit == "k" {
 			mileage = int(val * 1000)
 		}
-
 		if mileage > maxMileage {
 			maxMileage = mileage
 		}
@@ -268,4 +247,56 @@ func extractYear(title string) int {
 		return val
 	}
 	return 0
+}
+
+func extractTransmission(raw string) string {
+	if strings.Contains(raw, "automatic") {
+		return "Automatic"
+	}
+	if strings.Contains(raw, "manual") {
+		return "Manual"
+	}
+	return ""
+}
+
+func extractDrivetrain(raw string) string {
+	if strings.Contains(raw, "awd") {
+		return "AWD"
+	}
+	if strings.Contains(raw, "fwd") {
+		return "FWD"
+	}
+	if strings.Contains(raw, "rwd") {
+		return "RWD"
+	}
+	return ""
+}
+
+func extractBodyType(raw string) string {
+	raw = strings.ToLower(raw)
+	if strings.Contains(raw, "suv") {
+		return "SUV"
+	}
+	if strings.Contains(raw, "sedan") {
+		return "Sedan"
+	}
+	if strings.Contains(raw, "coupe") {
+		return "Coupe"
+	}
+	if strings.Contains(raw, "hatchback") {
+		return "Hatchback"
+	}
+	if strings.Contains(raw, "truck") || strings.Contains(raw, "pickup") {
+		return "Truck"
+	}
+	if strings.Contains(raw, "van") || strings.Contains(raw, "minivan") {
+		return "Van"
+	}
+	if strings.Contains(raw, "wagon") {
+		return "Wagon"
+	}
+	if strings.Contains(raw, "convertible") {
+		return "Convertible"
+	}
+	return ""
 }
