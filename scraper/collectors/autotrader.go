@@ -65,11 +65,24 @@ func getRandomUserAgent() string {
 func (c *AutoTraderCollector) Scrape(make, modelName string, results chan<- models.CarListing) {
 	defer close(results)
 
+	// Improved Stealth Headers
 	context, err := c.browser.NewContext(playwright.BrowserNewContextOptions{
 		UserAgent: playwright.String(getRandomUserAgent()),
 		Viewport: &playwright.Size{
 			Width:  1920,
 			Height: 1080,
+		},
+		ExtraHttpHeaders: map[string]string{
+			"Accept":                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+			"Accept-Language":           "en-US,en;q=0.9",
+			"Sec-Ch-Ua":                 `"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"`,
+			"Sec-Ch-Ua-Mobile":          "?0",
+			"Sec-Ch-Ua-Platform":        `"Windows"`,
+			"Sec-Fetch-Dest":            "document",
+			"Sec-Fetch-Mode":            "navigate",
+			"Sec-Fetch-Site":            "none",
+			"Sec-Fetch-User":            "?1",
+			"Upgrade-Insecure-Requests": "1",
 		},
 	})
 	if err != nil {
@@ -95,13 +108,12 @@ func (c *AutoTraderCollector) Scrape(make, modelName string, results chan<- mode
 	})
 
 	fmt.Println("⏳ Warming up session...")
-	if _, err := page.Goto("https://www.autotrader.ca", playwright.PageGotoOptions{
+	// Try a softer warmup (ignore errors if it's just a connection reset)
+	_, _ = page.Goto("https://www.autotrader.ca", playwright.PageGotoOptions{
 		WaitUntil: playwright.WaitUntilStateCommit,
-		Timeout:   playwright.Float(45000),
-	}); err != nil {
-		log.Printf("❌ Warmup failed: %v", err)
-	}
-	time.Sleep(3 * time.Second)
+		Timeout:   playwright.Float(15000),
+	})
+	time.Sleep(2 * time.Second)
 
 	pathMake := strings.ToLower(strings.ReplaceAll(make, " ", "-"))
 	pathModel := strings.ToLower(strings.ReplaceAll(modelName, " ", "-"))
