@@ -16,7 +16,11 @@ import {
 } from "@/components/ui/DropdownMenu";
 import { toast } from "sonner";
 
+import { useAuth } from "@/context/AuthContext";
+
 export function Navbar({ className }: { className?: string }) {
+    const { user, logout } = useAuth();
+
     return (
         <nav className={cn(
             "sticky top-0 z-40 w-full border-b border-border bg-background/80 backdrop-blur-xl",
@@ -33,15 +37,18 @@ export function Navbar({ className }: { className?: string }) {
 
                 {/* Search Bar - Center */}
                 <div className="hidden max-w-md flex-1 px-8 md:block">
-                     {/* Note: In a real app keypress Enter would trigger navigation. For now, we trust the user to type and click or we wrap.
-                         To keep it simple and INTEGRATION focused, I'll wrap it in a form. 
-                      */}
                     <form onSubmit={(e) => {
                         e.preventDefault();
-                        // Minimal logical integration without changing UI component structure deeply
-                        window.location.href = '/search'; 
+                        const formData = new FormData(e.currentTarget);
+                        const query = formData.get('query') as string;
+                        // Allow empty search to browse all cars
+                        window.location.href = `/search${query?.trim() ? `?query=${encodeURIComponent(query.trim())}` : ''}`;
                     }}>
-                        <SearchInput placeholder="Search for deals..." className="h-10" />
+                        <SearchInput 
+                            name="query" 
+                            placeholder="Search for deals..." 
+                            className="h-10" 
+                        />
                     </form>
                 </div>
 
@@ -49,60 +56,72 @@ export function Navbar({ className }: { className?: string }) {
                 <div className="flex items-center gap-2 sm:gap-4">
                     <ThemeSelector />
 
-                    <button
-                        onClick={() => toast.info("You have no new notifications")}
-                        className="relative rounded-xl p-2.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
-                    >
-                        <Bell className="h-5 w-5" />
-                    </button>
-
-                    <div className="h-8 w-[1px] bg-border mx-2" />
-
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <button className="flex items-center gap-2 rounded-xl bg-muted pl-3 pr-1.5 py-1.5 text-sm font-bold text-foreground border border-border transition-all hover:bg-accent hover:text-accent-foreground active:scale-95 outline-none">
-                                <span className="hidden sm:inline">Account</span>
-                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-card border border-border shadow-sm">
-                                    <User className="h-4 w-4" />
-                                </div>
-                            </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-56">
-                            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-
-                            <DropdownMenuItem asChild>
-                                <Link href="/profile" className="gap-2 cursor-pointer flex items-center w-full">
-                                    <User className="h-4 w-4" /> Profile
-                                </Link>
-                            </DropdownMenuItem>
-
-                            <DropdownMenuItem asChild>
-                                <Link href="/watchlist" className="gap-2 cursor-pointer flex items-center w-full">
-                                    <Heart className="h-4 w-4" /> Watchlist
-                                </Link>
-                            </DropdownMenuItem>
-
-                            <DropdownMenuItem asChild>
-                                <Link href="/membership" className="gap-2 cursor-pointer flex items-center w-full">
-                                    <ShieldCheck className="h-4 w-4" /> Membership
-                                </Link>
-                            </DropdownMenuItem>
-
-                            <DropdownMenuItem asChild>
-                                <Link href="/settings" className="gap-2 cursor-pointer flex items-center w-full">
-                                    <Settings className="h-4 w-4" /> Settings
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                                className="gap-2 text-red-500 focus:text-red-500 cursor-pointer"
-                                onClick={() => toast.error("Logout feature coming soon!")}
+                    {user ? (
+                        <>
+                            <button
+                                onClick={() => toast.info("You have no new notifications")}
+                                className="relative rounded-xl p-2.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
                             >
-                                <LogOut className="h-4 w-4" /> Log out
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                                <Bell className="h-5 w-5" />
+                            </button>
+
+                            <div className="h-8 w-[1px] bg-border mx-2" />
+
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <button className="flex items-center gap-2 rounded-xl bg-muted pl-3 pr-1.5 py-1.5 text-sm font-bold text-foreground border border-border transition-all hover:bg-accent hover:text-accent-foreground active:scale-95 outline-none">
+                                        <span className="hidden sm:inline">
+                                            {user.first_name ? user.first_name : 'Account'}
+                                        </span>
+                                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-card border border-border shadow-sm">
+                                            <User className="h-4 w-4" />
+                                        </div>
+                                    </button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-56">
+                                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/profile" className="gap-2 cursor-pointer flex items-center w-full">
+                                            <User className="h-4 w-4" /> Profile
+                                        </Link>
+                                    </DropdownMenuItem>
+
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/watchlist" className="gap-2 cursor-pointer flex items-center w-full">
+                                            <Heart className="h-4 w-4" /> Watchlist
+                                        </Link>
+                                    </DropdownMenuItem>
+
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/membership" className="gap-2 cursor-pointer flex items-center w-full">
+                                            <ShieldCheck className="h-4 w-4" /> Membership
+                                        </Link>
+                                    </DropdownMenuItem>
+
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/settings" className="gap-2 cursor-pointer flex items-center w-full">
+                                            <Settings className="h-4 w-4" /> Settings
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                        className="gap-2 text-red-500 focus:text-red-500 cursor-pointer"
+                                        onClick={logout}
+                                    >
+                                        <LogOut className="h-4 w-4" /> Log out
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </>
+                    ) : (
+                        <Link href="/profile?mode=login">
+                            <button className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:opacity-90">
+                                Log In
+                            </button>
+                        </Link>
+                    )}
 
                     {/* Mobile Search Toggle */}
                     <button className="md:hidden rounded-xl p-2.5 text-muted-foreground hover:bg-muted">

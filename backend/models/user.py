@@ -27,15 +27,24 @@ class User(Base):
     # === Profile Info ===
     first_name = Column(String, nullable=True)
     last_name = Column(String, nullable=True)
+    street_address = Column(String, nullable=True)
+    city = Column(String, nullable=True)
+    state = Column(String, nullable=True)
+    # postal_code is used for Zip Code
 
     # === Preferences (for recommendations) ===
-    commute_distance_km = Column(Integer, nullable=True)  # Daily commute in KM
-    family_size = Column(Integer, nullable=True)          # Number of passengers
-    postal_code = Column(String, nullable=True)           # For proximity filtering
+    commute_distance_km = Column(Integer, nullable=True)
+    family_size = Column(Integer, nullable=True)
+    postal_code = Column(String, nullable=True)           # Zip Code
     
-    # === Flexible Preferences (JSONB for future expansion) ===
-    # e.g., {"preferred_fuel": "electric", "must_have_awd": true}
+    # === Financials ===
+    annual_income = Column(Integer, nullable=True)
+    buying_power = Column(Integer, nullable=True)
+
+    # === Flexible Preferences ===
     preferences = Column(JSON, nullable=True, default={})
+    preferred_body_types = Column(JSON, nullable=True, default=[])
+    preferred_brands = Column(JSON, nullable=True, default=[])
 
     # === Status ===
     profile_complete = Column(Boolean, default=False)  # Has completed onboarding?
@@ -53,10 +62,20 @@ class UserBase(BaseModel):
     """Base user fields for creation/update"""
     first_name: Optional[str] = Field(None, description="User's first name")
     last_name: Optional[str] = Field(None, description="User's last name")
+    street_address: Optional[str] = Field(None, description="Street address")
+    city: Optional[str] = Field(None, description="City")
+    state: Optional[str] = Field(None, description="State")
+    postal_code: Optional[str] = Field(None, description="Zip/Postal code")
+    
+    annual_income: Optional[int] = Field(None, description="Annual income")
+    buying_power: Optional[int] = Field(None, description="Buying power/budget")
+    
     commute_distance_km: Optional[int] = Field(None, description="Daily commute in KM", ge=0)
     family_size: Optional[int] = Field(None, description="Family/passenger count", ge=1, le=10)
-    postal_code: Optional[str] = Field(None, description="Postal code for proximity")
+    
     preferences: Optional[dict] = Field(default={}, description="Flexible preferences JSON")
+    preferred_body_types: Optional[list[str]] = Field(default=[], description="List of preferred body types")
+    preferred_brands: Optional[list[str]] = Field(default=[], description="List of preferred brands")
 
 
 class UserCreate(BaseModel):

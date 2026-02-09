@@ -1,4 +1,3 @@
-import { MOCK_CARS } from "@/lib/mock-data";
 import { notFound } from "next/navigation";
 import { Navbar } from "@/components/ui/Navbar";
 import { Badge, gradeLabels } from "@/components/ui/Badge";
@@ -7,6 +6,7 @@ import { FreshnessBadge } from "@/components/motion/FreshnessBadge";
 import { Gauge, MapPin, Trophy, Calendar, Cog, Fuel, RotateCw, DollarSign } from "lucide-react";
 import Link from "next/link";
 import { PageTransition } from "@/components/motion/PageTransition";
+import { carService } from "@/lib/api";
 
 interface PageProps {
     params: {
@@ -14,8 +14,13 @@ interface PageProps {
     };
 }
 
-export default function CarDetailPage({ params }: PageProps) {
-    const car = MOCK_CARS.find((c) => c.id === params.id);
+export default async function CarDetailPage({ params }: PageProps) {
+    let car;
+    try {
+        car = await carService.getById(params.id);
+    } catch {
+        notFound();
+    }
 
     if (!car) {
         notFound();

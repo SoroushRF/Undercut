@@ -207,7 +207,7 @@ class CarSearchFilters(BaseModel):
     query: Optional[str] = Field(None, description="Free text search (make, model)")
     
     # Vehicle filters
-    make: Optional[str] = Field(None, description="Filter by make (e.g., Toyota)")
+    make: Optional[List[str]] = Field(None, description="Filter by make(s) (e.g., ['Toyota', 'Honda'])")
     model: Optional[str] = Field(None, description="Filter by model (e.g., Camry)")
     year_min: Optional[int] = Field(None, description="Minimum year", ge=1900)
     year_max: Optional[int] = Field(None, description="Maximum year", le=2030)
@@ -262,9 +262,12 @@ async def search_cars(
             (Car.make.ilike(search_term)) | (Car.model.ilike(search_term))
         )
 
-    # Make filter
-    if filters.make:
-        query = query.filter(Car.make.ilike(f"%{filters.make}%"))
+    # Make filter (List)
+    if filters.make and len(filters.make) > 0:
+        # Create an OR condition for multiple makes (case-insensitive)
+        from sqlalchemy import or_
+        make_conditions = [Car.make.ilike(f"%{make}%") for make in filters.make]
+        query = query.filter(or_(*make_conditions))
 
     # Model filter
     if filters.model:

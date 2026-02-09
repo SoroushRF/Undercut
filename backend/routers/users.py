@@ -80,6 +80,19 @@ async def create_user(user_data: UserCreate, db: Session = Depends(get_db)):
     return db_user
 
 
+@router.get("/by-email/{email}", response_model=UserResponse)
+@limiter.limit("10/minute")
+async def get_user_by_email(request: Request, email: str, db: Session = Depends(get_db)):
+    """
+    Get user by email.
+    Useful for login simulation when auth is not fully implemented.
+    """
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+
 @router.get("/me", response_model=UserResponse)
 @limiter.limit("60/minute")
 async def get_current_user(

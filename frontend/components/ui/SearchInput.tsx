@@ -7,14 +7,22 @@ import { cn } from "@/lib/utils";
 
 export interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     onClear?: () => void;
+    onSearch?: () => void;
 }
 
-export function SearchInput({ className, onClear, value, onChange, ...props }: SearchInputProps) {
+export function SearchInput({ className, onClear, onSearch, value, onChange, ...props }: SearchInputProps) {
     const inputRef = React.useRef<HTMLInputElement>(null);
 
     return (
         <div className={cn("relative flex w-full items-center", className)}>
-            <Search className="absolute left-4 h-5 w-5 text-muted-foreground" />
+            <button
+                type="submit"
+                onClick={onSearch}
+                className="absolute left-0 top-0 bottom-0 z-10 flex w-12 items-center justify-center rounded-l-2xl text-muted-foreground hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
+                title="Search"
+            >
+                <Search className="h-5 w-5" />
+            </button>
 
             <input
                 ref={inputRef}

@@ -6,6 +6,8 @@ import { ShieldCheck, Wallet } from "lucide-react";
 import { MOCK_CARS } from "@/lib/mock-data";
 import { TcoChart } from "@/components/viz/TcoChart";
 import { SearchSection } from "@/components/home/SearchSection";
+import Link from "next/link";
+import { HeroAuthButtons, FooterAuthButtons } from "@/components/home/HomeButtons";
 
 // UX Engineer Motion Components
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -52,20 +54,8 @@ export default function Home() {
                                     Undercut finds the best underpriced cars in the market so you never overpay again.
                                 </motion.p>
                             </div>
-
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
-                                className="flex flex-col gap-4 sm:flex-row"
-                            >
-                                <button className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90 hover:scale-105 active:scale-95 duration-200">
-                                    Sign Up
-                                </button>
-                                <button className="rounded-lg border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground transition hover:bg-secondary/50 hover:scale-105 active:scale-95 duration-200">
-                                    Log In
-                                </button>
-                            </motion.div>
+                            
+                            <HeroAuthButtons />
                         </div>
 
                         {/* Right Column: Hero Image */}
@@ -106,26 +96,26 @@ export default function Home() {
                 {/* New Sections: Shop Smart & Finding your fit */}
                 <div className="flex min-h-screen flex-col md:flex-row border-y border-border">
                     {/* Shop Smart */}
-                    <div className="group relative flex w-full flex-col justify-end p-12 md:w-1/2 min-h-[500px] overflow-hidden">
-                        <img
-                            src="/shop-smart.png"
-                            alt="Shop Smart"
+                    <Link href="/search" className="group relative flex w-full flex-col justify-end p-12 md:w-1/2 min-h-[500px] overflow-hidden cursor-pointer">
+                        <img 
+                            src="/shop-smart.png" 
+                            alt="Shop Smart" 
                             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent group-hover:from-primary/60 transition-colors duration-500" />
                         <h2 className="relative text-4xl font-black text-white tracking-tight">Shop Smart</h2>
-                    </div>
+                    </Link>
 
                     {/* Finding your fit */}
-                    <div className="group relative flex w-full flex-col justify-end p-12 md:w-1/2 min-h-[500px] overflow-hidden border-t md:border-t-0 md:border-l border-border">
-                        <img
-                            src="/finding-fit.png"
-                            alt="Finding your fit"
+                    <Link href="/search" className="group relative flex w-full flex-col justify-end p-12 md:w-1/2 min-h-[500px] overflow-hidden border-t md:border-t-0 md:border-l border-border cursor-pointer">
+                        <img 
+                            src="/finding-fit.png" 
+                            alt="Finding your fit" 
                             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent group-hover:from-primary/60 transition-colors duration-500" />
                         <h2 className="relative text-4xl font-black text-white tracking-tight">Finding your fit</h2>
-                    </div>
+                    </Link>
                 </div>
 
                 {/* Why Choose Undercut Section */}
@@ -166,14 +156,7 @@ export default function Home() {
                             </motion.div>
                         </div>
 
-                        <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-                            <button className="rounded-lg bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90">
-                                Sign Up Now
-                            </button>
-                            <button className="rounded-lg border border-border bg-card px-8 py-3 text-sm font-semibold text-foreground transition hover:bg-secondary/50">
-                                Log In
-                            </button>
-                        </div>
+                        <FooterAuthButtons />
                     </div>
                 </div>
 
@@ -188,19 +171,20 @@ export default function Home() {
                         <div className="mb-8 h-64 overflow-y-auto rounded-xl border border-border bg-card p-4 shadow-sm text-left">
                             <div className="flex flex-col gap-2">
                                 {["Toyota", "Honda", "Ford", "Chevrolet", "Tesla", "BMW", "Mercedes-Benz", "Audi", "Hyundai", "Kia", "Nissan", "Subaru", "Volkswagen", "Mazda", "Lexus", "Jeep", "Dodge", "Ram", "GMC", "Porsche"].map((brand) => (
-                                    <button
+                                    <Link 
                                         key={brand}
-                                        className="w-full rounded-lg px-4 py-3 text-left text-sm font-medium text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+                                        href={`/search?make=${brand}`}
+                                        className="w-full block rounded-lg px-4 py-3 text-left text-sm font-medium text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors"
                                     >
                                         {brand}
-                                    </button>
+                                    </Link>
                                 ))}
                             </div>
                         </div>
 
-                        <button className="w-full rounded-xl border-2 border-primary bg-transparent px-8 py-3 text-lg font-bold text-primary transition hover:bg-primary hover:text-primary-foreground sm:w-auto">
-                            Submit Selection
-                        </button>
+                        <Link href="/search" className="inline-block w-full rounded-xl border-2 border-primary bg-transparent px-8 py-3 text-lg font-bold text-primary transition hover:bg-primary hover:text-primary-foreground sm:w-auto">
+                            Browse All Cars
+                        </Link>
                     </div>
                 </div>
 

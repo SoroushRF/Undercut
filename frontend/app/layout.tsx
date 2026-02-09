@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 import { ChatWidget } from "@/components/ui/ChatWidget";
+import { AuthProvider } from "@/context/AuthContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,23 +20,24 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={inter.className}>
-                {children}
-                <Toaster
-                    richColors
-                    closeButton
-                    position="bottom-right"
-                    theme="system"
-                    toastOptions={{
-                        style: {
-                            background: 'hsl(var(--card))',
-                            color: 'hsl(var(--foreground))',
-                            border: '1px solid hsl(var(--border))',
-                        }
-                    }}
-                />
-                <ChatWidget />
+                <AuthProvider>
+                    {children}
+                    <Toaster
+                        richColors
+                        closeButton
+                        position="bottom-right"
+                        theme="system"
+                        toastOptions={{
+                            style: {
+                                background: 'hsl(var(--card))',
+                                color: 'hsl(var(--foreground))',
+                                border: '1px solid hsl(var(--border))',
+                            }
+                        }}
+                    />
+                    <ChatWidget />
+                </AuthProvider>
             </body>
         </html>
     );
 }
-
