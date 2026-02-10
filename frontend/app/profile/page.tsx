@@ -8,7 +8,7 @@ import { Slider } from "./Slider";
 import { ChevronRight, ChevronLeft, Wallet, Car, Zap, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageTransition } from "@/components/motion/PageTransition";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
 // Body Types for Step 2
@@ -26,7 +26,6 @@ import { API_BASE_URL } from "@/lib/api";
 const API_URL = API_BASE_URL;
 
 export default function ProfilePage() {
-    const searchParams = useSearchParams();
     const router = useRouter();
     const { user, login } = useAuth();
     
