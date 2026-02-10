@@ -1,7 +1,10 @@
 fastapi
 uvicorn
 pydantic
+python-dotenv
 google-generativeai
 sqlalchemy
 psycopg2-binary
+slowapi
+email-validator
 pytest

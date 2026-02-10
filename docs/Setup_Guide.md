@@ -67,6 +67,13 @@ python -m venv venv
 # Unix/Mac:
 source venv/bin/activate
 pip install -r requirements.txt
+
+# Database Setup (Supabase)
+# 1. Copy the example env file
+cp ../.env.example ../.env
+# 2. Update .env with your Supabase Connection String (Pooler URL)
+# DATABASE_URL=postgresql://postgres.[proj]:[pass]@aws-0-us-west-2.pooler.supabase.com:6543/postgres
+
 uvicorn main:app --reload
 ```
 

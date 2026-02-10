@@ -1,7 +1,11 @@
-module undercut-scraper
+module github.com/SoroushRF/Undercut/scraper
 
-go 1.21
+go 1.24
+
+require github.com/playwright-community/playwright-go v0.4902.0
 
 require (
-	github.com/gocolly/colly/v2 v2.1.0
+	github.com/deckarep/golang-set/v2 v2.6.0 // indirect
+	github.com/go-jose/go-jose/v3 v3.0.3 // indirect
+	github.com/go-stack/stack v1.8.1 // indirect
 )

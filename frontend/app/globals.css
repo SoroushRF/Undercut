@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 224 71% 4%;
+        --card: 0 0% 100%;
+        --card-foreground: 224 71% 4%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 224 71% 4%;
+        --primary: 221 83% 53%;
+        --primary-foreground: 210 40% 98%;
+        --secondary: 210 40% 96%;
+        --secondary-foreground: 222 47% 11%;
+        --muted: 210 40% 96%;
+        --muted-foreground: 215 16% 47%;
+        --accent: 210 40% 96%;
+        --accent-foreground: 222 47% 11%;
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 210 40% 98%;
+        --success: 142 76% 36%;
+        --success-foreground: 355 0% 100%;
+        --warning: 38 92% 50%;
+        --warning-foreground: 48 96% 89%;
+        --border: 214 32% 91%;
+        --input: 214 32% 91%;
+        --ring: 221 83% 53%;
+        --radius: 0.75rem;
+    }
+
+    /* Midnight Theme (Deep Purple-Black) */
+    .dark {
+        --background: 270 50% 1%;
+        /* Very Deep Purple-Black */
+        --foreground: 270 10% 98%;
+        --card: 270 30% 3%;
+        --card-foreground: 270 10% 100%;
+        --popover: 270 30% 3%;
+        --popover-foreground: 270 10% 100%;
+        --primary: 270 90% 65%;
+        /* Vibrant Purple */
+        --primary-foreground: 270 10% 100%;
+        --secondary: 270 20% 10%;
+        --secondary-foreground: 270 10% 98%;
+        --muted: 270 20% 8%;
+        --muted-foreground: 270 10% 65%;
+        --accent: 270 90% 65%;
+        --accent-foreground: 270 90% 65%;
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 100%;
+        --success: 142 71% 45%;
+        --success-foreground: 144 61% 20%;
+        --warning: 31 92% 56%;
+        --warning-foreground: 31 92% 10%;
+        --border: 270 20% 12%;
+        --input: 270 20% 12%;
+        --ring: 270 90% 65%;
+        --radius: 1rem;
+    }
+
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground transition-colors duration-500 ease-in-out;
+    }
+
+    /* Custom Selection Styling */
+    ::selection {
+        @apply bg-primary/20 text-foreground;
+    }
+
+    /* Premium Scrollbar Styling (Especially for Windows) */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        @apply bg-transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply rounded-full bg-muted-foreground/20 border-2 border-solid border-transparent bg-clip-padding transition-colors;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        @apply bg-muted-foreground/40;
+    }
+
+    /* For Firefox */
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: hsl(var(--muted-foreground) / 0.2) transparent;
+    }
+}

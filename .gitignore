@@ -50,3 +50,6 @@ test-results/
 
 # Docker
 .docker_data/
+
+# Database
+*.db
