@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/SoroushRF/Undercut/scraper/models"
@@ -12,8 +13,12 @@ import (
 
 // PostCarToBackend sends a single car listing to the central API
 func PostCarToBackend(car models.CarListing) error {
-	// TODO: Replace with your actual backend endpoint tomorrow
-	apiURL := "http://localhost:8000/api/cars"
+	apiURL := os.Getenv("BACKEND_URL")
+	if apiURL == "" {
+		apiURL = "http://localhost:8000"
+	}
+	// Append the endpoint
+	apiURL = apiURL + "/cars"
 
 	jsonData, err := json.Marshal(car)
 	if err != nil {
