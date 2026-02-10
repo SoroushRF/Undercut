@@ -115,13 +115,7 @@ export function Navbar({ className }: { className?: string }) {
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </>
-                    ) : (
-                        <Link href="/profile?mode=login">
-                            <button className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:opacity-90">
-                                Log In
-                            </button>
-                        </Link>
-                    )}
+                    ) : null}
 
                     {/* Mobile Search Toggle */}
                     <button className="md:hidden rounded-xl p-2.5 text-muted-foreground hover:bg-muted">

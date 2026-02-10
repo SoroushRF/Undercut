@@ -3,6 +3,7 @@ import { Navbar } from "@/components/ui/Navbar";
 import { Badge, gradeLabels } from "@/components/ui/Badge";
 import { SoldBadge } from "@/components/motion/SoldBadge";
 import { FreshnessBadge } from "@/components/motion/FreshnessBadge";
+import { AnalyzeButton } from "@/components/ui/AnalyzeButton";
 import { Gauge, MapPin, Trophy, Calendar, Cog, Fuel, RotateCw, DollarSign } from "lucide-react";
 import Link from "next/link";
 import { PageTransition } from "@/components/motion/PageTransition";
@@ -183,25 +184,22 @@ export default async function CarDetailPage({ params }: PageProps) {
                             </div>
 
                             {/* AI Verdict */}
-                            {car.ai_verdict && (
-                                <div className="mb-8 rounded-xl bg-indigo-50 p-4 border border-indigo-100">
-                                    <h3 className="font-bold text-indigo-900 mb-1 flex items-center gap-2">
-                                        <Trophy className="h-4 w-4" />
-                                        AI Verdict
-                                    </h3>
-                                    <p className="text-indigo-800 text-sm">
-                                        {car.ai_verdict}
-                                    </p>
-                                </div>
-                            )}
+                            <div className="mb-8">
+                                <AnalyzeButton carId={car.id} initialVerdict={car.ai_verdict} />
+                            </div>
 
                             {/* Action Buttons */}
                             <div className="mt-auto flex flex-col gap-3 sm:flex-row">
-                                <button className="flex-1 rounded-xl bg-zinc-900 px-6 py-4 text-base font-bold text-white shadow-lg transition hover:bg-zinc-800 hover:scale-[1.02] active:scale-[0.98]">
-                                    Contact Seller
-                                </button>
+                                <a 
+                                    href={car.listing_url} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="flex-1 rounded-xl bg-zinc-900 px-6 py-4 text-center text-base font-bold text-white shadow-lg transition hover:bg-zinc-800 hover:scale-[1.02] active:scale-[0.98]"
+                                >
+                                    Visit Original Listing
+                                </a>
                                 <button className="flex-1 rounded-xl border border-zinc-200 bg-white px-6 py-4 text-base font-bold text-zinc-700 transition hover:bg-zinc-50 hover:text-zinc-900 hover:border-zinc-300">
-                                    Make an Offer
+                                    Contact Seller
                                 </button>
                             </div>
                         </div>

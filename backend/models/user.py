@@ -45,6 +45,7 @@ class User(Base):
     preferences = Column(JSON, nullable=True, default={})
     preferred_body_types = Column(JSON, nullable=True, default=[])
     preferred_brands = Column(JSON, nullable=True, default=[])
+    additional_instructions = Column(String, nullable=True)
 
     # === Status ===
     profile_complete = Column(Boolean, default=False)  # Has completed onboarding?
@@ -76,6 +77,7 @@ class UserBase(BaseModel):
     preferences: Optional[dict] = Field(default={}, description="Flexible preferences JSON")
     preferred_body_types: Optional[list[str]] = Field(default=[], description="List of preferred body types")
     preferred_brands: Optional[list[str]] = Field(default=[], description="List of preferred brands")
+    additional_instructions: Optional[str] = Field(None, description="Custom user instructions for recommendations")
 
 
 class UserCreate(BaseModel):

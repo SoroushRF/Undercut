@@ -85,6 +85,7 @@ class Car(Base):
     seller_type = Column(String, nullable=True)  # dealer, private
     listing_url = Column(String)
     image_url = Column(String, nullable=True)
+    body_type = Column(String, nullable=True)  # SUV, Sedan, etc.
 
     # === Content ===
     description = Column(String, nullable=True)
@@ -111,7 +112,7 @@ class CarBase(BaseModel):
     Used by The Hunter (Scraper) to ingest data.
     """
     # Core
-    vin: str = Field(..., description="Vehicle Identification Number", min_length=17, max_length=17)
+    vin: Optional[str] = Field(None, description="Vehicle Identification Number")
     make: str = Field(..., description="Manufacturer (e.g., Toyota, BMW)")
     model: str = Field(..., description="Model name (e.g., Camry, M3)")
     year: int = Field(..., description="Manufacturing year", ge=1900, le=2030)
@@ -132,11 +133,12 @@ class CarBase(BaseModel):
 
     # Seller
     seller_type: Optional[str] = Field(None, description="dealer or private")
-    listing_url: HttpUrl = Field(..., description="Original listing URL")
-    image_url: Optional[HttpUrl] = Field(None, description="Main display image")
+    listing_url: str = Field(..., description="Original listing URL")  # Changed from HttpUrl
+    image_url: Optional[str] = Field(None, description="Main display image")  # Changed from HttpUrl
 
     # Content
     description: Optional[str] = Field(None, description="Raw seller description")
+    body_type: Optional[str] = Field(None, description="SUV, Sedan, Truck, etc.")
 
 
 class CarCreate(CarBase):

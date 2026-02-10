@@ -15,7 +15,7 @@ genai.configure(api_key=API_KEY)
 # Use the fast, cost-effective Flash model
 model = genai.GenerativeModel('gemini-1.5-flash')
 
-def analyze_car_listing(make: str, model_name: str, year: int, price: float, mileage: int, description: str):
+def analyze_car_listing(make: str, model_name: str, year: int, price: float, mileage: int, description: str, user_instructions: str = None):
     """
     Sends car data to Gemini for a "Vibe Check" / Deal Analysis.
     Returns a short string verdict.
@@ -31,11 +31,13 @@ def analyze_car_listing(make: str, model_name: str, year: int, price: float, mil
     Price: ${price}
     Mileage: {mileage} miles
     Seller Description: "{description}"
+    User Specific Interests: "{user_instructions if user_instructions else 'None provided'}"
 
     Task:
     1. Look for red flags in the description (e.g., "rebuilt title", "needs work", "running rough").
     2. Evaluate if the price seems reasonable for the mileage (general knowledge).
-    3. Give a ONE SENTENCE verdict on whether this is a potential flip or a pass.
+    3. Take the User's specific interests into account if provided.
+    4. Give a ONE SENTENCE verdict on whether this is a potential flip or a pass for THIS user.
     
     Format: "VERDICT: [Flip Potentail/Pass/Risky]. [Reasoning]"
     """
@@ -57,6 +59,7 @@ def generate_negotiation_script(
     mileage: int,
     deal_grade: str,
     issues: str = None,
+    user_instructions: str = None,
 ) -> str:
     """
     Generate a negotiation script for a buyer.
@@ -106,6 +109,7 @@ def generate_negotiation_script(
     - Mileage: {mileage:,} km
     - Deal Grade: {deal_grade} (S=great, F=terrible)
     - Known Issues: {issues_context}
+    - User's Specific Needs/Preferences: {user_instructions if user_instructions else 'None provided'}
     
     TASK:
     Generate a practical negotiation script the buyer can use.
@@ -115,6 +119,7 @@ def generate_negotiation_script(
     3. Target offer price (suggest a specific number)
     4. Fallback/walk-away point
     5. Closing technique
+    6. Ensure the script addresses the User's specific needs/preferences mentioned above.
     
     Keep it conversational and natural - not robotic.
     Make it specific to THIS car and price situation.

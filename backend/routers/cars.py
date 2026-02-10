@@ -26,21 +26,32 @@ async def create_car(car: CarCreate, db: Session = Depends(get_db)):
     Ingest a new car listing.
     Used by: The Hunter (Scraper)
     Note: No rate limit - internal use only
+    
+    Deduplication Strategy:
+    1. Primary: Check by listing_url (always unique per listing)
+    2. Secondary: Check by VIN (if provided)
     """
-    # Check if car exists (by VIN)
-    existing_car = db.query(Car).filter(Car.vin == car.vin).first()
-    if existing_car:
-        # For now, just return existing. Logic could update price history here.
-        return existing_car
+    # Primary dedup: Check by listing URL
+    existing_by_url = db.query(Car).filter(Car.listing_url == str(car.listing_url)).first()
+    if existing_by_url:
+        # Update timestamp and image if missing
+        existing_by_url.last_seen_at = datetime.now(timezone.utc)
+        if not existing_by_url.image_url and car.image_url:
+            existing_by_url.image_url = str(car.image_url)
+        db.commit()
+        return existing_by_url
+    
+    # Secondary dedup: Check by VIN
+    if car.vin and len(car.vin) >= 10:
+        existing_by_vin = db.query(Car).filter(Car.vin == car.vin).first()
+        if existing_by_vin:
+            existing_by_vin.last_seen_at = datetime.now(timezone.utc)
+            if not existing_by_vin.image_url and car.image_url:
+                existing_by_vin.image_url = str(car.image_url)
+            db.commit()
+            return existing_by_vin
 
     new_car_data = car.model_dump()
-    
-    # Convert HttpUrl types to strings for SQLite compatibility
-    if "listing_url" in new_car_data and new_car_data["listing_url"]:
-        new_car_data["listing_url"] = str(new_car_data["listing_url"])
-    if "image_url" in new_car_data and new_car_data["image_url"]:
-        new_car_data["image_url"] = str(new_car_data["image_url"])
-    
     db_car = Car(**new_car_data)
 
     # Set System Fields
@@ -93,6 +104,96 @@ async def read_cars(
     """
     cars = db.query(Car).filter(Car.status == "active").offset(skip).limit(limit).all()
     return cars
+
+
+from pydantic import BaseModel
+from typing import Optional
+
+class RecommendationRequest(BaseModel):
+    """User preferences from the questionnaire"""
+    max_budget: float
+    body_types: List[str] = []
+    daily_commute_km: int = 30
+    priority: str = "deal"  # deal, reliability, performance
+    additional_instructions: Optional[str] = None
+
+
+@router.post("/recommendations", response_model=List[CarResponse])
+@limiter.limit("30/minute")
+async def get_recommendations(
+    request: Request,
+    preferences: RecommendationRequest,
+    limit: int = 10,
+    db: Session = Depends(get_db),
+):
+    """
+    Get personalized car recommendations based on user preferences.
+    
+    Filters:
+    - Price <= max_budget
+    - Body type matches (if specified)
+    
+    Scoring:
+    - S grade deals: +100 points
+    - A grade deals: +75 points
+    - B grade deals: +50 points
+    - Lower price vs budget: bonus points
+    
+    Used by: Frontend after questionnaire completion
+    Rate Limited: 30 requests/minute
+    """
+    # Start with active cars within budget
+    query = db.query(Car).filter(
+        Car.status == "active",
+        Car.price <= preferences.max_budget
+    )
+    
+    # Filter by body type if specified
+    if preferences.body_types:
+        query = query.filter(Car.body_type.in_(preferences.body_types))
+    
+    # Get all matching cars
+    matching_cars = query.all()
+    
+    # Score each car
+    scored_cars = []
+    for car in matching_cars:
+        score = 0
+        
+        # Deal grade scoring (higher is better)
+        grade_scores = {"S": 100, "A": 75, "B": 50, "C": 25, "D": 10, "F": 0}
+        score += grade_scores.get(car.deal_grade, 0)
+        
+        # Budget efficiency bonus (more room = better)
+        if preferences.max_budget > 0:
+            budget_ratio = (preferences.max_budget - car.price) / preferences.max_budget
+            score += int(budget_ratio * 30)  # Up to 30 bonus points for being under budget
+        
+        # Priority-based adjustments
+        if preferences.priority == "deal":
+            # Already weighted by deal grade above
+            pass
+        elif preferences.priority == "reliability":
+            # Boost Toyota, Honda, Lexus
+            reliable_makes = ["Toyota", "Honda", "Lexus", "Mazda", "Subaru"]
+            if car.make in reliable_makes:
+                score += 25
+        elif preferences.priority == "performance":
+            # Boost sports cars and certain makes
+            if car.body_type in ["Coupe", "Convertible"]:
+                score += 20
+            performance_makes = ["BMW", "Audi", "Mercedes-Benz", "Tesla", "Porsche"]
+            if car.make in performance_makes:
+                score += 15
+        
+        scored_cars.append((score, car))
+    
+    # Sort by score descending
+    scored_cars.sort(key=lambda x: x[0], reverse=True)
+    
+    # Return top N
+    top_cars = [car for (score, car) in scored_cars[:limit]]
+    return top_cars
 
 
 @router.get("/trending", response_model=List[CarResponse])
@@ -170,6 +271,14 @@ async def analyze_car(request: Request, car_id: str, db: Session = Depends(get_d
     if not car:
         raise HTTPException(status_code=404, detail="Car not found")
 
+    # Fetch user instructions if available
+    user_instructions = None
+    user_id = request.headers.get("X-User-Id")
+    if user_id:
+        user = db.query(User).filter(User.id == user_id).first()
+        if user:
+            user_instructions = user.additional_instructions
+
     # Perform Analysis
     description_text = car.description if car.description else "No description provided."
 
@@ -180,6 +289,7 @@ async def analyze_car(request: Request, car_id: str, db: Session = Depends(get_d
         price=car.price,
         mileage=car.mileage,
         description=description_text,
+        user_instructions=user_instructions,
     )
 
     # Update DB
@@ -468,6 +578,14 @@ async def generate_negotiation(
     # Get issues from request or use None
     known_issues = neg_request.known_issues if neg_request else None
     
+    # Fetch user instructions if available
+    user_instructions = None
+    user_id = request.headers.get("X-User-Id")
+    if user_id:
+        user = db.query(User).filter(User.id == user_id).first()
+        if user:
+            user_instructions = user.additional_instructions
+
     # Generate the AI script
     script = generate_negotiation_script(
         make=car.make,
@@ -478,6 +596,7 @@ async def generate_negotiation(
         mileage=car.mileage or 0,
         deal_grade=car.deal_grade or "B",
         issues=known_issues,
+        user_instructions=user_instructions,
     )
     
     # Get quick tips (no AI, instant)
@@ -494,3 +613,51 @@ async def generate_negotiation(
         script=script,
         quick_tips=tips,
     )
+
+
+class AIAnalysisResponse(BaseModel):
+    car_id: str
+    verdict: str
+    analysis_type: str = "gemini_vibe_check"
+
+
+@router.post("/{car_id}/analyze", response_model=AIAnalysisResponse)
+@limiter.limit("10/minute")
+async def analyze_car_with_ai(
+    request: Request,
+    car_id: str,
+    db: Session = Depends(get_db),
+):
+    """
+    🧠 Gemini Vibe Check - AI-powered deal analysis.
+    
+    Sends the car data to Gemini for a quick verdict on whether
+    this is a good deal, a pass, or risky.
+    
+    Rate Limited: 10 requests/minute (AI costs)
+    """
+    from backend.services.ai import analyze_car_listing
+    
+    car = db.query(Car).filter(Car.id == car_id).first()
+    if not car:
+        raise HTTPException(status_code=404, detail="Car not found")
+    
+    # Call Gemini
+    verdict = analyze_car_listing(
+        make=car.make,
+        model_name=car.model,
+        year=car.year or 2020,
+        price=car.price or 0,
+        mileage=car.mileage or 0,
+        description=car.description or "No description available."
+    )
+    
+    # Optionally save the verdict to the car record
+    car.ai_verdict = verdict
+    db.commit()
+    
+    return AIAnalysisResponse(
+        car_id=car.id,
+        verdict=verdict
+    )
+

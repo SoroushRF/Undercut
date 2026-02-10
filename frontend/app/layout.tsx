@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
-import { ChatWidget } from "@/components/ui/ChatWidget";
 import { AuthProvider } from "@/context/AuthContext";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -35,7 +34,6 @@ export default function RootLayout({
                             }
                         }}
                     />
-                    <ChatWidget />
                 </AuthProvider>
             </body>
         </html>

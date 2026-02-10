@@ -5,7 +5,7 @@ import * as React from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/Card";
 import { Badge, gradeLabels } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
-import { MapPin, Gauge, Cpu } from "lucide-react";
+import { MapPin, Gauge, Cpu, Sparkles } from "lucide-react";
 
 export interface DealCardProps {
     id: string;
@@ -19,6 +19,7 @@ export interface DealCardProps {
     grade: "S" | "A" | "B" | "C" | "D" | "F";
     imageUrl?: string;
     className?: string;
+    isNew?: boolean;
     onClick?: () => void;
 }
 
@@ -33,6 +34,7 @@ export function DealCard({
     grade,
     imageUrl,
     className,
+    isNew = true,
     onClick,
 }: DealCardProps) {
     return (
@@ -58,10 +60,16 @@ export function DealCard({
                 )}
 
                 {/* Grade Badge Overlay */}
-                <div className="absolute left-4 top-4">
+                <div className="absolute left-4 top-4 flex flex-col gap-2">
                     <Badge grade={grade} className="px-3 py-1 text-sm shadow-lg">
                         {gradeLabels[grade]}
                     </Badge>
+                    {isNew && (
+                        <div className="flex items-center gap-1 rounded-full bg-violet-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-xl animate-pulse">
+                            <Sparkles className="h-3 w-3" />
+                            Fresh Match
+                        </div>
+                    )}
                 </div>
 
                 {/* Price Tag Overlay */}

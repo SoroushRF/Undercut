@@ -103,12 +103,24 @@ async def get_current_user(
     """
     Get the current user's profile.
     
-    Returns profile_complete=false if user hasn't finished onboarding.
-    Frontend should redirect to profile setup if incomplete.
+    DEMO MVP: If user doesn't exist, auto-create a guest profile.
+    This ensures zero-friction for hackathon judges.
     """
     user = db.query(User).filter(User.id == user_id).first()
+    
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        # Auto-create guest
+        user = User(
+            id=user_id,
+            email=f"guest_{user_id[:8]}@demo.local",
+            profile_complete=False,
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        
     return user
 
 
